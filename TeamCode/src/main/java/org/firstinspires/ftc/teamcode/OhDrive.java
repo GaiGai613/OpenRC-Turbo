@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import java.util.List;
@@ -34,6 +35,14 @@ public class OhDrive extends Behavior
         motorRight = hardwareMap.dcMotor.get("motorRight");
         strafeOne = hardwareMap.dcMotor.get("strafeOne");
         strafeTwo = hardwareMap.dcMotor.get("strafeTwo");
+
+        motorRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        strafeOne.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        strafeOne.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        strafeTwo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         motorLeft.setPower(0);
         motorRight.setPower(0);
