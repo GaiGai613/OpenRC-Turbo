@@ -9,6 +9,7 @@ import java.util.List;
 import FTCEngine.Core.Behavior;
 import FTCEngine.Core.Input;
 import FTCEngine.Core.Main;
+import FTCEngine.Math.Mathf;
 import FTCEngine.Math.Vector2;
 import FTCEngine.Math.Vector3;
 
@@ -51,20 +52,58 @@ public class OhDrive extends Behavior
     }
 
     private Gyroscope gyroscope;
-    DcMotor motorRight;
-    DcMotor motorLeft;
-    DcMotor strafeOne;
-    DcMotor strafeTwo;
+    private DcMotor motorRight;
+    private DcMotor motorLeft;
+    private DcMotor strafeOne;
+    private DcMotor strafeTwo;
+
+    private Vector2 direction;
 
     @Override
     public void update()
     {
         super.update();
 
-        Vector2 targetAngle = input.getDirection(Input.Source.CONTROLLER_1, Input.Joystick.LEFT);
-        Vector3 velocity = gyroscope.getVelocity();
-        Vector2 velocityTargetAngle = new Vector2(velocity.x, velocity.y);
+        Vector2 targetAngle = input.getDirection(Input.Source.CONTROLLER_1, Input.Button.LEFT_JOYSTICK); // angle we want to go (i.e. forward)
+        Vector2 currentVelocity = gyroscope.getVelocity().toXY(); // gets current velocity
 
-        float degree = Vector2.signedAngle(Vector2.right, targetAngle);
+        if(!currentVelocity.equals(Vector2.zero))
+        {
+            float degree = Vector2.signedAngle(Vector2.right, targetAngle);
+            float velocityDegree = Vector2.signedAngle(Vector2.right, currentVelocity);
+
+            float difference = Mathf.toSignedAngle(degree - velocityDegree); // calculates difference in angles
+
+            float sign = Math.signum(difference);
+            difference = Math.abs(difference);
+
+            if(difference >= 2f)
+            {
+                direction.rotate(sign * difference/10); // rotates velocity vector to go striaght
+            }
+
+        }
+        else {
+            direction = Vector2.zero;
+        }
+
+        setTargetVector(direction);
+
+    }
+
+    /**
+     *
+     * @param target
+     *
+     * Sets motor powers to wanted values
+     */
+
+    private void setTargetVector(Vector2 target)
+    {
+        motorRight.setPower(target.x);
+        motorLeft.setPower(target.x);
+
+        strafeOne.setPower(target.y);
+        strafeTwo.setPower(target.y);
     }
 }
