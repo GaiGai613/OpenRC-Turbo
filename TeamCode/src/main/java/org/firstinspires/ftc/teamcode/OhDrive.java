@@ -61,19 +61,21 @@ public class OhDrive extends Behavior
 	{
 		super.update();
 
-		Vector2 targetAngle = input.getDirection(Input.Source.CONTROLLER_1, Input.Button.LEFT_JOYSTICK); // angle we want to go (i.e. forward)
-		Vector2 currentVelocity = gyroscope.getVelocity().toXY(); // gets current velocity
+		Vector2 target = input.getDirection(Input.Source.CONTROLLER_1, Input.Button.LEFT_JOYSTICK); // angle we want to go (i.e. forward)
+		Vector2 velocity = gyroscope.getVelocity().toXY(); // gets current velocity
 
-		if (!currentVelocity.equals(Vector2.zero))
+		gyroscope.getAccel();
+
+		if (!target.equals(Vector2.zero))
 		{
 			if (direction.equals(Vector2.zero))
 			{
-				direction = currentVelocity.normalize();
+				direction = target.normalize();
 			}
 			else
 			{
-				float degree = Vector2.signedAngle(Vector2.right, targetAngle);
-				float velocityDegree = Vector2.signedAngle(Vector2.right, currentVelocity);
+				float degree = Vector2.signedAngle(Vector2.right, target);
+				float velocityDegree = Vector2.signedAngle(Vector2.right, velocity);
 
 				float difference = Mathf.toSignedAngle(degree - velocityDegree); // calculates difference in angles
 
@@ -89,6 +91,11 @@ public class OhDrive extends Behavior
 		else direction = Vector2.zero;
 
 		setTarget(direction);
+
+		telemetry.addData("gyroscope", gyroscope);
+		telemetry.addData("direction", direction);
+		telemetry.addData("target", target);
+		telemetry.addData("velocity", velocity);
 	}
 
 	/**
