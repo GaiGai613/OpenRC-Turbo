@@ -13,7 +13,9 @@ public class Test extends Main
 	@Override
 	public void addBehaviors(List<Behavior> behaviorList)
 	{
-		behaviorList.add(new Gyroscope(this));
-		behaviorList.add(new OhDrive(this));
+//		behaviorList.add(new Gyroscope(this));
+//		behaviorList.add(new OhDrive(this));
+
+        behaviorList.add(new OhDriveBasic(this));
 	}
 }
