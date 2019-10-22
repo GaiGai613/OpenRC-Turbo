@@ -16,6 +16,7 @@ public class Test extends Main
 //		behaviorList.add(new Gyroscope(this));
 //		behaviorList.add(new OhDrive(this));
 
-        behaviorList.add(new OhDriveBasic(this));
+		behaviorList.add(new OhDriveBasic(this));
+		behaviorList.add(new Grabber(this));
 	}
 }
