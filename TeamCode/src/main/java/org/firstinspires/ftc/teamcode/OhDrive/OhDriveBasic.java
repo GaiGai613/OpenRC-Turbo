@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.OhDrive;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -32,10 +32,10 @@ public class OhDriveBasic extends Behavior {
         motorRight.setDirection(DcMotorSimple.Direction.REVERSE);
         strafeOne.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        strafeOne.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        strafeTwo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        strafeOne.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        strafeTwo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         motorLeft.setPower(0d);
         motorRight.setPower(0d);
@@ -56,7 +56,13 @@ public class OhDriveBasic extends Behavior {
         Vector2 inputLeft = input.getVector(Input.Source.CONTROLLER_1, Input.Button.LEFT_JOYSTICK);
         Vector2 inputRight = input.getVector(Input.Source.CONTROLLER_1, Input.Button.RIGHT_JOYSTICK);
 
-        if (!inputLeft.equals(Vector2.zero)) setTarget(inputLeft);
+        if (!inputLeft.equals(Vector2.zero)) {
+            motorRight.setPower(-inputLeft.y);
+            motorLeft.setPower(-inputLeft.y);
+
+            strafeOne.setPower(inputLeft.x);
+            strafeTwo.setPower(inputLeft.x);
+        }
         else {
             motorRight.setPower(inputRight.x);
             motorLeft.setPower(-inputRight.x);
@@ -64,17 +70,5 @@ public class OhDriveBasic extends Behavior {
             strafeOne.setPower(0d);
             strafeTwo.setPower(0d);
         }
-    }
-
-    /**
-     * @param target Sets motor powers to wanted values
-     */
-    private void setTarget(Vector2 target)
-    {
-        motorRight.setPower(target.x);
-        motorLeft.setPower(target.x);
-
-        strafeOne.setPower(target.y);
-        strafeTwo.setPower(target.y);
     }
 }
