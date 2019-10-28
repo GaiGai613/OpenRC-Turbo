@@ -7,11 +7,10 @@ import java.util.List;
 import FTCEngine.Core.Behavior;
 import FTCEngine.Core.Main;
 
-@TeleOp(name = "MecanumTeleOp")
-public class MecanumTeleOp extends Main {
+@TeleOp(name = "MecanumTestTeleOp")
+public class MecanumTeleOpTest extends Main {
     @Override
     public void addBehaviors(List<Behavior> behaviorList) {
-        behaviorList.add(new MecanumDrivetrain(this));
         behaviorList.add(new MecanumTest(this));
     }
 }
