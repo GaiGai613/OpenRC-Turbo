@@ -5,12 +5,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import FTCEngine.Core.Behavior;
 import FTCEngine.Core.Input;
-import FTCEngine.Core.Main;
+import FTCEngine.Core.OpModeBase;
 import FTCEngine.Math.Mathf;
 
 public class Grabber extends Behavior
 {
-	public Grabber(Main opMode)
+	public Grabber(OpModeBase opMode)
 	{
 		super(opMode);
 	}

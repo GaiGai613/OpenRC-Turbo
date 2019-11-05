@@ -5,10 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.List;
 
 import FTCEngine.Core.Behavior;
-import FTCEngine.Core.Main;
+import FTCEngine.Core.OpModeBase;
 
 @TeleOp(name = "MecanumTeleOp")
-public class MecanumTeleOp extends Main {
+public class MecanumTeleOp extends OpModeBase {
     @Override
     public void addBehaviors(List<Behavior> behaviorList) {
         behaviorList.add(new MecanumDrivetrain(this));

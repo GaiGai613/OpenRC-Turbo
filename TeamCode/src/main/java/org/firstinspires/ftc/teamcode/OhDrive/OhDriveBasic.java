@@ -6,8 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import FTCEngine.Core.Behavior;
 import FTCEngine.Core.Input;
-import FTCEngine.Core.Main;
-import FTCEngine.Math.Mathf;
+import FTCEngine.Core.OpModeBase;
 import FTCEngine.Math.Vector2;
 
 public class OhDriveBasic extends Behavior {
@@ -16,7 +15,7 @@ public class OhDriveBasic extends Behavior {
      *
      * @param opMode
      */
-    public OhDriveBasic(Main opMode) {
+    public OhDriveBasic(OpModeBase opMode) {
         super(opMode);
     }
 

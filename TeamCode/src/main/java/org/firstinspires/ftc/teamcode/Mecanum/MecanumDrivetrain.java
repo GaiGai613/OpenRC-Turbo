@@ -4,13 +4,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import FTCEngine.Core.Behavior;
 import FTCEngine.Core.Input;
-import FTCEngine.Core.Main;
+import FTCEngine.Core.OpModeBase;
+import FTCEngine.Core.TeleOp.TeleOpBehavior;
+import FTCEngine.Math.Mathf;
 import FTCEngine.Math.Vector2;
 
-public class MecanumDrivetrain extends Behavior {
-    public MecanumDrivetrain(Main opMode) {
+public class MecanumDrivetrain extends TeleOpBehavior {
+    public MecanumDrivetrain(OpModeBase opMode) {
         super(opMode);
     }
 
@@ -25,11 +26,6 @@ public class MecanumDrivetrain extends Behavior {
 
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-
-//        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         frontLeft.setPower(0f);
         frontRight.setPower(0f);
@@ -46,11 +42,25 @@ public class MecanumDrivetrain extends Behavior {
     public void update() {
         super.update();
 
-        Vector2 vector = input.getVector(Input.Source.CONTROLLER_1, Input.Button.RIGHT_JOYSTICK);
+        Vector2 leftJoystick = input.getVector(Input.Source.CONTROLLER_1, Input.Button.LEFT_JOYSTICK);
+        float rightJoystickX = input.getVector(Input.Source.CONTROLLER_1, Input.Button.RIGHT_JOYSTICK).x;
 
-        frontRight.setPower(vector.y+vector.x);
-        frontLeft.setPower(vector.y-vector.x);
-        backRight.setPower(vector.y-vector.x);
-        backLeft.setPower(vector.y+vector.x);
+        if (leftJoystick.equals(Vector2.zero) && Mathf.almostEquals(rightJoystickX,0f)) {
+            setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        } else {
+            setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        }
+
+        frontRight.setPower(leftJoystick.y+leftJoystick.x+rightJoystickX);
+        frontLeft.setPower(leftJoystick.y-leftJoystick.x-rightJoystickX);
+        backRight.setPower(leftJoystick.y-leftJoystick.x+rightJoystickX);
+        backLeft.setPower(leftJoystick.y+leftJoystick.x-rightJoystickX);
+    }
+
+    private void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
+        frontRight.setZeroPowerBehavior(behavior);
+        frontLeft.setZeroPowerBehavior(behavior);
+        backRight.setZeroPowerBehavior(behavior);
+        backLeft.setZeroPowerBehavior(behavior);
     }
 }

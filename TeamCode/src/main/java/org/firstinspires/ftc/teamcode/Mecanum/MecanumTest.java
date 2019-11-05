@@ -6,11 +6,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import FTCEngine.Core.Behavior;
 import FTCEngine.Core.Input;
-import FTCEngine.Core.Main;
-import FTCEngine.Math.Vector2;
+import FTCEngine.Core.OpModeBase;
 
 public class MecanumTest extends Behavior {
-    public MecanumTest(Main opMode) {
+    public MecanumTest(OpModeBase opMode) {
         super(opMode);
     }
 

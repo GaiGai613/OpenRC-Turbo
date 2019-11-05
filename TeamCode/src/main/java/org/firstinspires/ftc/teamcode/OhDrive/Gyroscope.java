@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.OhDrive;
 
-import android.text.Html;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -16,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 import FTCEngine.Core.Behavior;
-import FTCEngine.Core.Main;
+import FTCEngine.Core.OpModeBase;
 import FTCEngine.Math.Vector3;
 
 public class Gyroscope extends Behavior
@@ -24,7 +21,7 @@ public class Gyroscope extends Behavior
 	/**
 	 * NOTE: Do not configure the electronics in the constructor, do them in the awake method!
 	 */
-	public Gyroscope(Main opMode)
+	public Gyroscope(OpModeBase opMode)
 	{
 		super(opMode);
 	}
