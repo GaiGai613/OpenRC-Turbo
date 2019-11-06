@@ -13,10 +13,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 import FTCEngine.Core.Behavior;
+
 import FTCEngine.Core.OpModeBase;
+import FTCEngine.Core.TeleOp.TeleOpBehavior;
+import FTCEngine.Core.TeleOp.TeleOpModeBase;
 import FTCEngine.Math.Vector3;
 
-public class Gyroscope extends Behavior
+public class Gyroscope extends TeleOpBehavior
 {
 	/**
 	 * NOTE: Do not configure the electronics in the constructor, do them in the awake method!

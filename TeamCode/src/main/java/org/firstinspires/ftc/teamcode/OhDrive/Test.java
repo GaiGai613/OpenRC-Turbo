@@ -5,10 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.List;
 
 import FTCEngine.Core.Behavior;
-import FTCEngine.Core.OpModeBase;
+
+import FTCEngine.Core.TeleOp.TeleOpModeBase;
 
 @TeleOp(name = "OhDriveTest")
-public class Test extends OpModeBase
+public class Test extends TeleOpModeBase
 {
 	@Override
 	public void addBehaviors(List<Behavior> behaviorList)

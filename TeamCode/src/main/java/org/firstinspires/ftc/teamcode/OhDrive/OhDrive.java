@@ -6,11 +6,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import FTCEngine.Core.Behavior;
 import FTCEngine.Core.Input;
+
 import FTCEngine.Core.OpModeBase;
+import FTCEngine.Core.TeleOp.TeleOpBehavior;
+import FTCEngine.Core.TeleOp.TeleOpModeBase;
 import FTCEngine.Math.Mathf;
 import FTCEngine.Math.Vector2;
 
-public class OhDrive extends Behavior
+public class OhDrive extends TeleOpBehavior
 {
 	/**
 	 * NOTE: Do not configure the electronics in the constructor, do them in the awake method!

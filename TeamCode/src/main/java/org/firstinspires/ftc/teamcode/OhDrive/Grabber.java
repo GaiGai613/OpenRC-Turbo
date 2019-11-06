@@ -5,10 +5,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import FTCEngine.Core.Behavior;
 import FTCEngine.Core.Input;
+
 import FTCEngine.Core.OpModeBase;
+import FTCEngine.Core.TeleOp.TeleOpBehavior;
+import FTCEngine.Core.TeleOp.TeleOpModeBase;
 import FTCEngine.Math.Mathf;
 
-public class Grabber extends Behavior
+public class Grabber extends TeleOpBehavior
 {
 	public Grabber(OpModeBase opMode)
 	{
