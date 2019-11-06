@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Mecanum.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Mecanum.Drivetrain;
+import org.firstinspires.ftc.teamcode.Mecanum.Intake;
 
 import java.util.List;
 
@@ -17,5 +17,6 @@ public class MainTeleOp extends TeleOpModeBase
 	{
 		behaviorList.add(new Drivetrain(this));
 		behaviorList.add(new MecanumTest(this));
+		behaviorList.add(new Intake(this));
 	}
 }
