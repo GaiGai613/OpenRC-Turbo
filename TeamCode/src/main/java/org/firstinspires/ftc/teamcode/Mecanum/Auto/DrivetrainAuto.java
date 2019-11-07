@@ -24,10 +24,9 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 		backRight = hardwareMap.dcMotor.get("backRight");
 		backLeft = hardwareMap.dcMotor.get("backLeft");
 
-		frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-		backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+		frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+		backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-		setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
 		setMotorPower(0f);
 
 		frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -41,18 +40,23 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 	private DcMotor backRight;
 	private DcMotor backLeft;
 
-	private final float INCH_2_TICK = 43.4f;
+	private final float INCH_2_TICK_NORMAL = 64.87f;
+	private final float INCH_2_TICK_STRAFE = INCH_2_TICK_NORMAL * 1.166667f;
+
 	private final float DEGREE_2_TICK = 10.0f;
 
 	@Override
 	protected void updateJob()
 	{
 		AutoJob job =  getCurrentJob();
+		int amount;
 
-		int amount = Math.round(job.amount * INCH_2_TICK);
+		System.out.println(job.mode + " " + (1f/time.getDeltaTime()));
 
 		switch (job.mode) {
 			case MOVE:
+
+				amount = Math.round(job.amount * INCH_2_TICK_NORMAL);
 
 				frontLeft.setTargetPosition(amount);
 				frontRight.setTargetPosition(amount);
@@ -63,6 +67,8 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 
 			case STRAFE:
 
+				amount = Math.round(job.amount * INCH_2_TICK_STRAFE);
+
 				frontLeft.setTargetPosition(amount);
 				frontRight.setTargetPosition(-amount);
 				backLeft.setTargetPosition(-amount);
@@ -72,13 +78,20 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 
 			case ROTATE:
 
+				amount = Math.round(job.amount * DEGREE_2_TICK);
+
 				frontLeft.setTargetPosition(-amount);
 				frontRight.setTargetPosition(amount);
 				backLeft.setTargetPosition(-amount);
 				backRight.setTargetPosition(amount);
 
 				break;
+
+			default: throw new IllegalArgumentException(job.mode.toString());
 		}
+
+		setMotorPower(1f);
+		setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 		if (!frontLeft.isBusy() && !frontRight.isBusy() && !backLeft.isBusy() && !backRight.isBusy()) {
 			setMotorPower(0f);
@@ -111,6 +124,11 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 
 		public final Mode mode;
 		public final float amount;
+
+		@Override
+		public String toString() {
+			return "AutoJob{" + "mode=" + mode + ", amount=" + amount +'}';
+		}
 
 		public enum Mode {
 			MOVE,

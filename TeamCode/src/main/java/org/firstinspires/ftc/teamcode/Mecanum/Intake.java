@@ -34,13 +34,17 @@ public class Intake extends TeleOpBehavior {
     public void update() {
         super.update();
 
-        if(input.getButton(Input.Source.CONTROLLER_2, Input.Button.A)) {
-            intakeRight.setPower(1d);
-            intakeLeft.setPower(1d);
-        }
-        else {
-            intakeRight.setPower(0d);
-            intakeLeft.setPower(0d);
-        }
+//        if(input.getButton(Input.Source.CONTROLLER_2, Input.Button.A)) {
+//            intakeRight.setPower(1d);
+//            intakeLeft.setPower(1d);
+//        }
+//        else {
+//            intakeRight.setPower(0d);
+//            intakeLeft.setPower(0d);
+//        }
+
+        float rightJoystick = input.getVector(Input.Source.CONTROLLER_2, Input.Button.RIGHT_JOYSTICK).y;
+        intakeRight.setPower(rightJoystick);
+        intakeLeft.setPower(rightJoystick);
     }
 }

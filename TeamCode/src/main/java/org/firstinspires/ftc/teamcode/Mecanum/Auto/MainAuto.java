@@ -21,8 +21,9 @@ public class MainAuto extends AutoOpModeBase
 	{
 		DrivetrainAuto drivetrain = getBehavior(DrivetrainAuto.class);
 
-		execute(drivetrain,new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.MOVE,48f));
-//		wait(2f);
+//		execute(drivetrain,new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.MOVE,48f));
+//		wait(3f);
+		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.STRAFE,-24f));
 
 	}
 }

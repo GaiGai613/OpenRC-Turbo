@@ -25,8 +25,8 @@ public class Drivetrain extends TeleOpBehavior {
         backRight = hardwareMap.dcMotor.get("backRight");
         backLeft = hardwareMap.dcMotor.get("backLeft");
 
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         frontLeft.setPower(0d);
         frontRight.setPower(0d);
@@ -63,6 +63,11 @@ public class Drivetrain extends TeleOpBehavior {
         frontLeft.setPower(velocity.y - velocity.x - angularVelocity);
         backRight.setPower(velocity.y - velocity.x + angularVelocity);
         backLeft.setPower(velocity.y + velocity.x - angularVelocity);
+
+        telemetry.addData("Front Right Power", frontRight.getPower());
+        telemetry.addData("Front Left Power", frontLeft.getPower());
+        telemetry.addData("Back Left Power", backLeft.getPower());
+        telemetry.addData("Back Right Power", backRight.getPower());
     }
 
     public void setVelocity(Vector2 velocity) {
