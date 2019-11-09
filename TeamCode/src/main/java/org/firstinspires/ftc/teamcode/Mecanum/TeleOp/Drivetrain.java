@@ -11,77 +11,95 @@ import FTCEngine.Core.TeleOp.TeleOpModeBase;
 import FTCEngine.Math.Mathf;
 import FTCEngine.Math.Vector2;
 
-public class Drivetrain extends TeleOpBehavior {
-    public Drivetrain(OpModeBase opMode) {
-        super(opMode);
-    }
+public class Drivetrain extends TeleOpBehavior
+{
+	public Drivetrain(OpModeBase opMode)
+	{
+		super(opMode);
+	}
 
-    @Override
-    public void awake(HardwareMap hardwareMap) {
-        super.awake(hardwareMap);
+	@Override
+	public void awake(HardwareMap hardwareMap)
+	{
+		super.awake(hardwareMap);
 
-        frontLeft = hardwareMap.dcMotor.get("frontLeft");
-        frontRight = hardwareMap.dcMotor.get("frontRight");
-        backRight = hardwareMap.dcMotor.get("backRight");
-        backLeft = hardwareMap.dcMotor.get("backLeft");
+		frontLeft = hardwareMap.dcMotor.get("frontLeft");
+		frontRight = hardwareMap.dcMotor.get("frontRight");
+		backLeft = hardwareMap.dcMotor.get("backLeft");
+		backRight = hardwareMap.dcMotor.get("backRight");
 
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+//		frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+		frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+//		backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+		backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        frontLeft.setPower(0d);
-        frontRight.setPower(0d);
-        backRight.setPower(0d);
-        backLeft.setPower(0d);
+		frontLeft.setPower(0d);
+		frontRight.setPower(0d);
+		backLeft.setPower(0d);
+		backRight.setPower(0d);
+	}
 
-        if (getIsAuto()) {
-            frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-    }
+	private DcMotor frontRight;
+	private DcMotor frontLeft;
+	private DcMotor backRight;
+	private DcMotor backLeft;
 
-    private DcMotor frontRight;
-    private DcMotor frontLeft;
-    private DcMotor backRight;
-    private DcMotor backLeft;
+	private Vector2 velocity = Vector2.zero;
+	private float angularVelocity;
 
-    private Vector2 velocity = Vector2.zero;
-    private float angularVelocity;
+	@Override
+	public void update()
+	{
+		super.update();
 
-    @Override
-    public void update() {
-        super.update();
+		velocity = input.getVector(Input.Source.CONTROLLER_1, Input.Button.LEFT_JOYSTICK);
+		angularVelocity = input.getVector(Input.Source.CONTROLLER_1, Input.Button.RIGHT_JOYSTICK).x;
 
-        velocity = input.getVector(Input.Source.CONTROLLER_1, Input.Button.LEFT_JOYSTICK);
-        angularVelocity = input.getVector(Input.Source.CONTROLLER_1, Input.Button.RIGHT_JOYSTICK).x;
+		if (velocity.equals(Vector2.zero) && Mathf.almostEquals(angularVelocity, 0f))
+		{
+			setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		}
+		else
+		{
+			setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+		}
 
-        if (velocity.equals(Vector2.zero) && Mathf.almostEquals(angularVelocity, 0f)) {
-            setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        } else {
-            setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        }
+//		frontRight.setPower(velocity.y - velocity.x - angularVelocity);
+//		frontLeft.setPower(velocity.y + velocity.x + angularVelocity);
+//		backRight.setPower(velocity.y + velocity.x - angularVelocity);
+//		backLeft.setPower(velocity.y - velocity.x + angularVelocity);
 
-        frontRight.setPower(velocity.y + velocity.x + angularVelocity);
-        frontLeft.setPower(velocity.y - velocity.x - angularVelocity);
-        backRight.setPower(velocity.y - velocity.x + angularVelocity);
-        backLeft.setPower(velocity.y + velocity.x - angularVelocity);
+//		frontRight.setPower(velocity.y - velocity.x);
+//		frontLeft.setPower(velocity.y - velocity.x);
+//		backRight.setPower(velocity.y + velocity.x);
+//		backLeft.setPower(velocity.y + velocity.x);
 
-        telemetry.addData("Front Right Power", frontRight.getPower());
-        telemetry.addData("Front Left Power", frontLeft.getPower());
-        telemetry.addData("Back Left Power", backLeft.getPower());
-        telemetry.addData("Back Right Power", backRight.getPower());
-    }
+		frontRight.setPower(velocity.y);
+		frontLeft.setPower(velocity.y);
+		backRight.setPower(velocity.y);
+		backLeft.setPower(velocity.y);
 
-    public void setVelocity(Vector2 velocity) {
-        this.velocity = velocity;
-    }
+		telemetry.addData("Front Right Power", frontRight.getPower());
+		telemetry.addData("Front Left Power", frontLeft.getPower());
+		telemetry.addData("Back Left Power", backLeft.getPower());
+		telemetry.addData("Back Right Power", backRight.getPower());
+	}
 
-    public void setAngularVelocity(float angularVelocity) {
-        this.angularVelocity = angularVelocity;
-    }
+	public void setVelocity(Vector2 velocity)
+	{
+		this.velocity = velocity;
+	}
 
-    private void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {
-        frontRight.setZeroPowerBehavior(behavior);
-        frontLeft.setZeroPowerBehavior(behavior);
-        backRight.setZeroPowerBehavior(behavior);
-        backLeft.setZeroPowerBehavior(behavior);
-    }
+	public void setAngularVelocity(float angularVelocity)
+	{
+		this.angularVelocity = angularVelocity;
+	}
+
+	private void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior)
+	{
+		frontRight.setZeroPowerBehavior(behavior);
+		frontLeft.setZeroPowerBehavior(behavior);
+		backRight.setZeroPowerBehavior(behavior);
+		backLeft.setZeroPowerBehavior(behavior);
+	}
 }
