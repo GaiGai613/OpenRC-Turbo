@@ -8,47 +8,37 @@ import FTCEngine.Core.Input;
 import FTCEngine.Core.OpModeBase;
 import FTCEngine.Core.TeleOp.TeleOpBehavior;
 
-public class Intake extends TeleOpBehavior {
-    public Intake(OpModeBase opMode) {
-        super(opMode);
-    }
+public class Intake extends TeleOpBehavior
+{
+	public Intake(OpModeBase opMode)
+	{
+		super(opMode);
+	}
 
-    @Override
-    public void awake(HardwareMap hardwareMap) {
-        super.awake(hardwareMap);
-        intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
-        intakeRight = hardwareMap.dcMotor.get("intakeRight");
-        lift = hardwareMap.dcMotor.get("lift");
+	@Override
+	public void awake(HardwareMap hardwareMap)
+	{
+		super.awake(hardwareMap);
+		intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
+		intakeRight = hardwareMap.dcMotor.get("intakeRight");
 
-        intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+		intakeRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        intakeLeft.setPower(0d);
-        intakeRight.setPower(0d);
+		intakeLeft.setPower(0d);
+		intakeRight.setPower(0d);
+	}
 
-        input.registerButton(Input.Source.CONTROLLER_2, Input.Button.A);
-    }
+	private DcMotor intakeLeft;
+	private DcMotor intakeRight;
 
-    private DcMotor intakeLeft;
-    private DcMotor intakeRight;
-    private DcMotor lift;
+	@Override
+	public void update()
+	{
+		super.update();
 
-    @Override
-    public void update() {
-        super.update();
+		float input = this.input.getVector(Input.Source.CONTROLLER_2, Input.Button.RIGHT_JOYSTICK).y;
 
-//        if(input.getButton(Input.Source.CONTROLLER_2, Input.Button.A)) {
-//            intakeRight.setPower(1d);
-//            intakeLeft.setPower(1d);
-//        }
-//        else {
-//            intakeRight.setPower(0d);
-//            intakeLeft.setPower(0d);
-//        }
-
-        float rightJoystick = input.getVector(Input.Source.CONTROLLER_2, Input.Button.RIGHT_JOYSTICK).y;
-        float leftJoystick = input.getVector(Input.Source.CONTROLLER_2, Input.Button.LEFT_JOYSTICK).y;
-        intakeRight.setPower(-rightJoystick);
-        intakeLeft.setPower(-rightJoystick);
-        lift.setPower(-leftJoystick);
-    }
+		intakeRight.setPower(input);
+		intakeLeft.setPower(input);
+	}
 }
