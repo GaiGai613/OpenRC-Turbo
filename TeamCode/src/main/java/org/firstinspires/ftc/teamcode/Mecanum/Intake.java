@@ -18,6 +18,7 @@ public class Intake extends TeleOpBehavior {
         super.awake(hardwareMap);
         intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
         intakeRight = hardwareMap.dcMotor.get("intakeRight");
+        lift = hardwareMap.dcMotor.get("lift");
 
         intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -29,6 +30,7 @@ public class Intake extends TeleOpBehavior {
 
     private DcMotor intakeLeft;
     private DcMotor intakeRight;
+    private DcMotor lift;
 
     @Override
     public void update() {
@@ -44,7 +46,9 @@ public class Intake extends TeleOpBehavior {
 //        }
 
         float rightJoystick = input.getVector(Input.Source.CONTROLLER_2, Input.Button.RIGHT_JOYSTICK).y;
-        intakeRight.setPower(rightJoystick);
-        intakeLeft.setPower(rightJoystick);
+        float leftJoystick = input.getVector(Input.Source.CONTROLLER_2, Input.Button.LEFT_JOYSTICK).y;
+        intakeRight.setPower(-rightJoystick);
+        intakeLeft.setPower(-rightJoystick);
+        lift.setPower(-leftJoystick);
     }
 }
