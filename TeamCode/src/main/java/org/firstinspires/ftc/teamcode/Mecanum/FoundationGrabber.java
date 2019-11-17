@@ -19,7 +19,7 @@ public class FoundationGrabber extends TeleOpBehavior {
         puller = hardwareMap.servo.get("puller");
         puller.setPosition(0);
 
-        input.registerButton(Input.Source.CONTROLLER_1, Input.Button.RIGHT_TRIGGER);
+        input.registerButton(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER);
     }
 
     Servo puller;
@@ -27,7 +27,7 @@ public class FoundationGrabber extends TeleOpBehavior {
     public void update() {
         super.update();
 
-        if(input.getButton(Input.Source.CONTROLLER_1, Input.Button.RIGHT_TRIGGER)) {
+        if(input.getButton(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER)) {
             puller.setPosition(1);
         }
         else {

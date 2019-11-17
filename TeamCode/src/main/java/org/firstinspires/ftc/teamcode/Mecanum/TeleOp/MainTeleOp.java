@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Mecanum.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Mecanum.FoundationGrabber;
 import org.firstinspires.ftc.teamcode.Mecanum.Grabber;
 import org.firstinspires.ftc.teamcode.Mecanum.Intake;
 import org.firstinspires.ftc.teamcode.Mecanum.Lift;
@@ -21,6 +22,7 @@ public class MainTeleOp extends TeleOpModeBase
 		behaviorList.add(new Intake(this));
 		behaviorList.add(new Lift(this));
 		behaviorList.add(new Grabber(this));
+		behaviorList.add(new FoundationGrabber(this));
 
 //		behaviorList.add(new MecanumTest(this));
 	}
