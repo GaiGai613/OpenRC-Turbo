@@ -25,7 +25,7 @@ public class Grabber extends Behavior
 		rotation.setPosition(1d);
 		squeeze.setPosition(0d);
 
-		input.registerButton(Input.Source.CONTROLLER_1, Input.Button.A);
+		input.registerButton(Input.Source.CONTROLLER_2, Input.Button.RIGHT_BUMPER);
 		input.registerButton(Input.Source.CONTROLLER_2, Input.Button.A);
 	}
 
@@ -40,7 +40,7 @@ public class Grabber extends Behavior
 	{
 		super.update();
 
-		if (input.getButtonDown(Input.Source.CONTROLLER_1, Input.Button.A)) isRotated = !isRotated;
+		if (input.getButtonDown(Input.Source.CONTROLLER_2, Input.Button.RIGHT_BUMPER)) isRotated = !isRotated;
 		if (input.getButtonDown(Input.Source.CONTROLLER_2, Input.Button.A)) isSqueezed = !isSqueezed;
 
 		rotation.setPosition(isRotated ? 0d : 1d);

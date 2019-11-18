@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import FTCEngine.Core.Behavior;
 import FTCEngine.Core.Input;
 import FTCEngine.Core.OpModeBase;
+import FTCEngine.Math.Mathf;
 
 public class Lift extends Behavior
 {
@@ -30,6 +31,11 @@ public class Lift extends Behavior
 
 	private DcMotor lift;
 
+	float height;
+
+	final float MAX_HEIGHT = 3000;
+	final float MIN_HEIGHT = 100;
+
 	@Override
 	public void update()
 	{
@@ -37,8 +43,13 @@ public class Lift extends Behavior
 
 		float value = input.getVector(Input.Source.CONTROLLER_2, Input.Button.LEFT_JOYSTICK).y;
 
+		value = value * value * Mathf.normalize(value);
+
 		if (value < 0f) value /= 4f;
-		lift.setPower(value);
+
+		value *= time.getDeltaTime() * 100f;
+		height = Mathf.clamp(height + value, MIN_HEIGHT,MAX_HEIGHT);
+		lift.setTargetPosition((int)height);
 
 		telemetry.addData("Lift Encoder", lift.getCurrentPosition());
 	}

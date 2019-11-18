@@ -22,8 +22,6 @@ public class Intake extends TeleOpBehavior
 		intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
 		intakeRight = hardwareMap.dcMotor.get("intakeRight");
 
-		intakeRight.setDirection(DcMotorSimple.Direction.REVERSE);
-
 		intakeLeft.setPower(0d);
 		intakeRight.setPower(0d);
 	}

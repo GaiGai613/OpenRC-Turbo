@@ -62,6 +62,8 @@ public class Drivetrain extends TeleOpBehavior
 			setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 		}
 
+		velocity = velocity.mul(velocity.getMagnitude());
+
 		frontRight.setPower(-velocity.y + velocity.x + angularVelocity);
 		frontLeft.setPower(-velocity.y - velocity.x - angularVelocity);
 		backRight.setPower(-velocity.y - velocity.x + angularVelocity);
