@@ -21,8 +21,8 @@ public class MainTeleOp extends TeleOpModeBase
 		behaviorList.add(new Drivetrain(this));
 		behaviorList.add(new Intake(this));
 		behaviorList.add(new Lift(this));
-		behaviorList.add(new Grabber(this));
-		behaviorList.add(new FoundationGrabber(this));
+//		behaviorList.add(new Grabber(this));
+//		behaviorList.add(new FoundationGrabber(this));
 
 //		behaviorList.add(new MecanumTest(this));
 	}
