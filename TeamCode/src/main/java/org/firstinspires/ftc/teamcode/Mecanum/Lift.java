@@ -33,6 +33,10 @@ public class Lift extends Behavior
 		super.update();
 
 		float value = input.getVector(Input.Source.CONTROLLER_2, Input.Button.LEFT_JOYSTICK).y;
-		lift.setPower(value * value * Mathf.normalize(value));
+
+		if (value < 0f) value *= 0.2f;
+		else value = value * value * Mathf.normalize(value);
+		
+		lift.setPower(value);
 	}
 }

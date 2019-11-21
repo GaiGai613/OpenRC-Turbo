@@ -24,15 +24,12 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 		backRight = hardwareMap.dcMotor.get("backRight");
 		backLeft = hardwareMap.dcMotor.get("backLeft");
 
-		frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-		backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+		frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+		backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
 		setMotorPower(0f);
-
-		frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		setMotorBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 	}
 
 	private DcMotor frontRight;
@@ -40,7 +37,7 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 	private DcMotor backRight;
 	private DcMotor backLeft;
 
-	private final float INCH_2_TICK_NORMAL = 64.87f;
+	private final float INCH_2_TICK_NORMAL = 50f;
 	private final float INCH_2_TICK_STRAFE = INCH_2_TICK_NORMAL * 1.166667f;
 
 	private final float DEGREE_2_TICK = 10.0f;
@@ -58,10 +55,10 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 
 				amount = Math.round(job.amount * INCH_2_TICK_NORMAL);
 
-				frontLeft.setTargetPosition(amount);
-				frontRight.setTargetPosition(amount);
-				backLeft.setTargetPosition(amount);
-				backRight.setTargetPosition(amount);
+				frontLeft.setTargetPosition(-amount);
+				frontRight.setTargetPosition(-amount);
+				backLeft.setTargetPosition(-amount);
+				backRight.setTargetPosition(-amount);
 
 				break;
 
@@ -69,10 +66,10 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 
 				amount = Math.round(job.amount * INCH_2_TICK_STRAFE);
 
-				frontLeft.setTargetPosition(amount);
-				frontRight.setTargetPosition(-amount);
-				backLeft.setTargetPosition(-amount);
-				backRight.setTargetPosition(amount);
+				frontLeft.setTargetPosition(-amount);
+				frontRight.setTargetPosition(amount);
+				backLeft.setTargetPosition(amount);
+				backRight.setTargetPosition(-amount);
 
 				break;
 
@@ -90,14 +87,27 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 			default: throw new IllegalArgumentException(job.mode.toString());
 		}
 
-		setMotorPower(1f);
+//		setMotorPower(1f);
 		setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
+		setMotorBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
 		if (!frontLeft.isBusy() && !frontRight.isBusy() && !backLeft.isBusy() && !backRight.isBusy()) {
+
 			setMotorPower(0f);
 			setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+			setMotorBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 			job.finishJob();
+		} else {
+			telemetry.addData("FR",frontRight.getTargetPosition());
+			telemetry.addData("FL",frontLeft.getTargetPosition());
+			telemetry.addData("BR",backRight.getTargetPosition());
+			telemetry.addData("BL",backLeft.getTargetPosition());
+
+			telemetry.addData("FRC",frontRight.getCurrentPosition());
+			telemetry.addData("FLC",frontLeft.getCurrentPosition());
+			telemetry.addData("BRC",backRight.getCurrentPosition());
+			telemetry.addData("BLC",backLeft.getCurrentPosition());
 		}
 	}
 
@@ -113,6 +123,13 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 		frontRight.setPower(power);
 		backRight.setPower(power);
 		backLeft.setPower(power);
+	}
+
+	private void setMotorBehavior(DcMotor.ZeroPowerBehavior behavior) {
+		frontRight.setZeroPowerBehavior(behavior);
+		frontLeft.setZeroPowerBehavior(behavior);
+		backRight.setZeroPowerBehavior(behavior);
+		backLeft.setZeroPowerBehavior(behavior);
 	}
 
 	public static class AutoJob extends FTCEngine.Core.Auto.Job
