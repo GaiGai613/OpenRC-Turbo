@@ -37,7 +37,7 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 	private DcMotor backRight;
 	private DcMotor backLeft;
 
-	private final float INCH_2_TICK_NORMAL = 50f;
+	private final float INCH_2_TICK_NORMAL = 119.2f;
 	private final float INCH_2_TICK_STRAFE = INCH_2_TICK_NORMAL * 1.166667f;
 
 	private final float DEGREE_2_TICK = 10.0f;
@@ -87,7 +87,7 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 			default: throw new IllegalArgumentException(job.mode.toString());
 		}
 
-//		setMotorPower(1f);
+		setMotorPower(1f);
 		setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
 		setMotorBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 

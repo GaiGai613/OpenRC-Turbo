@@ -21,16 +21,16 @@ public class Intake extends TeleOpBehavior
 		super.awake(hardwareMap);
 		intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
 		intakeRight = hardwareMap.dcMotor.get("intakeRight");
-//		guide = hardwareMap.dcMotor.get("guide");
+		guide = hardwareMap.dcMotor.get("guide");
 
 		intakeLeft.setPower(0d);
 		intakeRight.setPower(0d);
-//		guide.setPower(0d);
+		guide.setPower(0d);
 	}
 
 	private DcMotor intakeLeft;
 	private DcMotor intakeRight;
-//	private DcMotor guide;
+	private DcMotor guide;
 
 	@Override
 	public void update()
@@ -41,6 +41,6 @@ public class Intake extends TeleOpBehavior
 
 		intakeRight.setPower(input);
 		intakeLeft.setPower(input);
-//		guide.setPower(input);
+		guide.setPower(input);
 	}
 }

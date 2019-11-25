@@ -59,9 +59,9 @@ public class DrivetrainIMU extends TeleOpBehavior
 		currentAngle = Mathf.toUnsignedAngle(currentAngle + angleInput);
 
 		float realAngle = Mathf.toUnsignedAngle(gyroscope.getAngles().y);
-		float angularVelocity = Mathf.toSignedAngle(currentAngle -realAngle);
+		float angularDelta = Mathf.toSignedAngle(currentAngle -realAngle) * 0.1f;
 
-		if (velocity.equals(Vector2.zero) && Mathf.almostEquals(angularVelocity, 0f))
+		if (velocity.equals(Vector2.zero) && Mathf.almostEquals(angularDelta, 0f))
 		{
 			setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		}
@@ -72,15 +72,15 @@ public class DrivetrainIMU extends TeleOpBehavior
 
 		velocity = velocity.mul(velocity.getMagnitude());
 
-		frontRight.setPower(-velocity.y + velocity.x + angularVelocity);
-		frontLeft.setPower(-velocity.y - velocity.x - angularVelocity);
-		backRight.setPower(-velocity.y - velocity.x + angularVelocity);
-		backLeft.setPower(-velocity.y + velocity.x - angularVelocity);
+		frontRight.setPower(-velocity.y + velocity.x + angularDelta);
+		frontLeft.setPower(-velocity.y - velocity.x - angularDelta);
+		backRight.setPower(-velocity.y - velocity.x + angularDelta);
+		backLeft.setPower(-velocity.y + velocity.x - angularDelta);
 
-		telemetry.addData("Front Right Power", frontRight.getPower());
-		telemetry.addData("Front Left Power", frontLeft.getPower());
-		telemetry.addData("Back Left Power", backLeft.getPower());
-		telemetry.addData("Back Right Power", backRight.getPower());
+		telemetry.addData("Target",currentAngle);
+		telemetry.addData("Delta",angularDelta);
+		telemetry.addData("Real",realAngle);
+		telemetry.addData("TEST",Mathf.toSignedAngle(600f));
 	}
 
 	private void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior)

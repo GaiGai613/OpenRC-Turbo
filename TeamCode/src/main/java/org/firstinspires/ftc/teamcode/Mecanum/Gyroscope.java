@@ -43,14 +43,22 @@ public class Gyroscope extends TeleOpBehavior
 		imu.startAccelerationIntegration(
 				new Position(DistanceUnit.METER, 0d, 0d, 0d, 0),
 				new Velocity(DistanceUnit.METER, 0d, 0d, 0d, 0), 5);
+
+		initialAngles = getAnglesInternal();
 	}
 
 	private BNO055IMU imu;
+	private Vector3 initialAngles;
 
-	public Vector3 getAngles()
+	private Vector3 getAnglesInternal()
 	{
 		Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
 		return new Vector3(angles.firstAngle, angles.secondAngle, angles.thirdAngle);
+	}
+
+	public Vector3 getAngles()
+	{
+		return getAnglesInternal().sub(initialAngles);
 	}
 
 	public Vector3 getVelocity()

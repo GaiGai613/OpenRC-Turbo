@@ -19,8 +19,8 @@ public class MainTeleOp extends TeleOpModeBase
 	@Override
 	public void addBehaviors(List<Behavior> behaviorList)
 	{
-		behaviorList.add(new Drivetrain(this));
-//		behaviorList.add(new DrivetrainIMU(this));
+//		behaviorList.add(new Drivetrain(this));
+		behaviorList.add(new DrivetrainIMU(this));
 		behaviorList.add(new Intake(this));
 		behaviorList.add(new Lift(this));
 		behaviorList.add(new Grabber(this));
