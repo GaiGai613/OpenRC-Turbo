@@ -56,10 +56,13 @@ public class DrivetrainIMU extends TeleOpBehavior
 		Vector2 velocity = input.getVector(Input.Source.CONTROLLER_1, Input.Button.LEFT_JOYSTICK);
 		float angleInput = input.getVector(Input.Source.CONTROLLER_1, Input.Button.RIGHT_JOYSTICK).x;
 
-		currentAngle = Mathf.toUnsignedAngle(currentAngle + angleInput);
+		currentAngle = Mathf.toUnsignedAngle(currentAngle + angleInput * 10f);
 
 		float realAngle = Mathf.toUnsignedAngle(gyroscope.getAngles().y);
-		float angularDelta = Mathf.toSignedAngle(currentAngle -realAngle) * 0.1f;
+		float angularDelta = Mathf.toSignedAngle(currentAngle -realAngle);
+
+		if (Math.abs(angularDelta) <= 3f) angularDelta = 0f;
+		else angularDelta = angularDelta * Math.abs(angularDelta) / 180f;
 
 		if (velocity.equals(Vector2.zero) && Mathf.almostEquals(angularDelta, 0f))
 		{
@@ -80,7 +83,7 @@ public class DrivetrainIMU extends TeleOpBehavior
 		telemetry.addData("Target",currentAngle);
 		telemetry.addData("Delta",angularDelta);
 		telemetry.addData("Real",realAngle);
-		telemetry.addData("TEST",Mathf.toSignedAngle(600f));
+		telemetry.addData("TEST",(1f/time.getDeltaTime()));
 	}
 
 	private void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior)

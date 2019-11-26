@@ -4,9 +4,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.Mecanum.Gyroscope;
+
 import FTCEngine.Core.Auto.AutoBehavior;
 import FTCEngine.Core.Auto.Job;
+import FTCEngine.Core.Input;
 import FTCEngine.Core.OpModeBase;
+import FTCEngine.Math.Mathf;
+import FTCEngine.Math.Vector2;
 
 public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 {
@@ -30,12 +35,15 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 		setMotorPower(0f);
 		setMotorBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+		gyroscope = opMode.getBehavior(Gyroscope.class);
 	}
 
 	private DcMotor frontRight;
 	private DcMotor frontLeft;
 	private DcMotor backRight;
 	private DcMotor backLeft;
+	private Gyroscope gyroscope;
 
 	private final float INCH_2_TICK_NORMAL = 119.2f;
 	private final float INCH_2_TICK_STRAFE = INCH_2_TICK_NORMAL * 1.166667f;
@@ -75,12 +83,34 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 
 			case ROTATE:
 
-				amount = Math.round(job.amount * DEGREE_2_TICK);
+				// old code
+//				amount = Math.round(job.amount * DEGREE_2_TICK);
+//
+//				frontLeft.setTargetPosition(-amount);
+//				frontRight.setTargetPosition(amount);
+//				backLeft.setTargetPosition(-amount);
+//				backRight.setTargetPosition(amount);
 
-				frontLeft.setTargetPosition(-amount);
-				frontRight.setTargetPosition(amount);
-				backLeft.setTargetPosition(-amount);
-				backRight.setTargetPosition(amount);
+				float target = job.amount;
+				float currentAngle = Mathf.toUnsignedAngle(gyroscope.getAngles().y);
+				float angularDelta = Mathf.toSignedAngle(currentAngle - target);
+
+				if (Math.abs(angularDelta) <= 3f) angularDelta = 0f;
+				else angularDelta = angularDelta * Math.abs(angularDelta) / 180f;
+
+				if (Mathf.almostEquals(angularDelta, 0f))
+				{
+					setMotorBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+				}
+				else
+				{
+					setMotorBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+				}
+
+				frontRight.setPower(angularDelta);
+				frontLeft.setPower(-angularDelta);
+				backRight.setPower(angularDelta);
+				backLeft.setPower(-angularDelta);
 
 				break;
 
