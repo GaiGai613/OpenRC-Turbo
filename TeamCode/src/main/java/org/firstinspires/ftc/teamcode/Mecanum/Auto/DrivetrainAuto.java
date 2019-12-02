@@ -21,13 +21,14 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 	}
 
 	@Override
-	public void awake(HardwareMap hardwareMap) {
+	public void awake(HardwareMap hardwareMap)
+	{
 		super.awake(hardwareMap);
 
 		frontLeft = hardwareMap.dcMotor.get("frontLeft");
 		frontRight = hardwareMap.dcMotor.get("frontRight");
-		backRight = hardwareMap.dcMotor.get("backRight");
 		backLeft = hardwareMap.dcMotor.get("backLeft");
+		backRight = hardwareMap.dcMotor.get("backRight");
 
 		frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 		backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -43,9 +44,10 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 	private DcMotor frontLeft;
 	private DcMotor backRight;
 	private DcMotor backLeft;
+
 	private Gyroscope gyroscope;
 
-	private final float INCH_2_TICK_NORMAL = 119.2f;
+	private final float INCH_2_TICK_NORMAL = 63.8571428571f;
 	private final float INCH_2_TICK_STRAFE = INCH_2_TICK_NORMAL * 1.166667f;
 
 	private final float DEGREE_2_TICK = 10.0f;
@@ -53,109 +55,106 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 	@Override
 	protected void updateJob()
 	{
-		AutoJob job =  getCurrentJob();
-		int amount;
+		AutoJob job = getCurrentJob();
 
-		System.out.println(job.mode + " " + (1f/time.getDeltaTime()));
+		if (job.mode == AutoJob.Mode.ROTATE)
+		{
+			float target = Mathf.toUnsignedAngle(job.amount);
 
-		switch (job.mode) {
-			case MOVE:
+			float currentAngle = Mathf.toUnsignedAngle(gyroscope.getAngles().y);
+			float angularDelta = Mathf.toSignedAngle(target - currentAngle);
 
-				amount = Math.round(job.amount * INCH_2_TICK_NORMAL);
+			if (Math.abs(angularDelta) <= 1f) angularDelta = 0f;
+			else angularDelta = angularDelta / 60f;
 
-				frontLeft.setTargetPosition(-amount);
-				frontRight.setTargetPosition(-amount);
-				backLeft.setTargetPosition(-amount);
-				backRight.setTargetPosition(-amount);
+			setMotorBehavior(Mathf.almostEquals(angularDelta, 0f) ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT);
+			setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-				break;
+			frontRight.setPower(angularDelta);
+			frontLeft.setPower(-angularDelta);
+			backRight.setPower(angularDelta);
+			backLeft.setPower(-angularDelta);
 
-			case STRAFE:
+			if (Mathf.almostEquals(angularDelta, 0f)) job.finishJob();
 
-				amount = Math.round(job.amount * INCH_2_TICK_STRAFE);
-
-				frontLeft.setTargetPosition(-amount);
-				frontRight.setTargetPosition(amount);
-				backLeft.setTargetPosition(amount);
-				backRight.setTargetPosition(-amount);
-
-				break;
-
-			case ROTATE:
-
-				// old code
-//				amount = Math.round(job.amount * DEGREE_2_TICK);
-//
-//				frontLeft.setTargetPosition(-amount);
-//				frontRight.setTargetPosition(amount);
-//				backLeft.setTargetPosition(-amount);
-//				backRight.setTargetPosition(amount);
-
-				float target = job.amount;
-				float currentAngle = Mathf.toUnsignedAngle(gyroscope.getAngles().y);
-				float angularDelta = Mathf.toSignedAngle(currentAngle - target);
-
-				if (Math.abs(angularDelta) <= 3f) angularDelta = 0f;
-				else angularDelta = angularDelta * Math.abs(angularDelta) / 180f;
-
-				if (Mathf.almostEquals(angularDelta, 0f))
-				{
-					setMotorBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-				}
-				else
-				{
-					setMotorBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-				}
-
-				frontRight.setPower(angularDelta);
-				frontLeft.setPower(-angularDelta);
-				backRight.setPower(angularDelta);
-				backLeft.setPower(-angularDelta);
-
-				break;
-
-			default: throw new IllegalArgumentException(job.mode.toString());
+			telemetry.addData("Target", target);
+			telemetry.addData("currentAngle", currentAngle);
+			telemetry.addData("angularDelta", angularDelta);
 		}
+		else
+		{
+			int amount;
 
-		setMotorPower(1f);
-		setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
-		setMotorBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+			switch (job.mode)
+			{
+				case MOVE:
 
-		if (!frontLeft.isBusy() && !frontRight.isBusy() && !backLeft.isBusy() && !backRight.isBusy()) {
+					amount = Math.round(job.amount * INCH_2_TICK_NORMAL);
 
-			setMotorPower(0f);
-			setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-			setMotorBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+					frontLeft.setTargetPosition(-amount);
+					frontRight.setTargetPosition(-amount);
+					backLeft.setTargetPosition(-amount);
+					backRight.setTargetPosition(-amount);
 
-			job.finishJob();
-		} else {
-			telemetry.addData("FR",frontRight.getTargetPosition());
-			telemetry.addData("FL",frontLeft.getTargetPosition());
-			telemetry.addData("BR",backRight.getTargetPosition());
-			telemetry.addData("BL",backLeft.getTargetPosition());
+					break;
 
-			telemetry.addData("FRC",frontRight.getCurrentPosition());
-			telemetry.addData("FLC",frontLeft.getCurrentPosition());
-			telemetry.addData("BRC",backRight.getCurrentPosition());
-			telemetry.addData("BLC",backLeft.getCurrentPosition());
+				case STRAFE:
+
+					amount = Math.round(job.amount * INCH_2_TICK_STRAFE);
+
+					frontLeft.setTargetPosition(-amount);
+					frontRight.setTargetPosition(amount);
+					backLeft.setTargetPosition(amount);
+					backRight.setTargetPosition(-amount);
+
+					break;
+			}
+
+			setMotorPower(1f);
+			setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
+			setMotorBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+			if (!frontLeft.isBusy() && !frontRight.isBusy() && !backLeft.isBusy() && !backRight.isBusy())
+			{
+				setMotorPower(0f);
+				setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+				setMotorBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+				job.finishJob();
+			}
+			else
+			{
+				telemetry.addData("FR", frontRight.getTargetPosition());
+				telemetry.addData("FL", frontLeft.getTargetPosition());
+				telemetry.addData("BR", backRight.getTargetPosition());
+				telemetry.addData("BL", backLeft.getTargetPosition());
+
+				telemetry.addData("FRC", frontRight.getCurrentPosition());
+				telemetry.addData("FLC", frontLeft.getCurrentPosition());
+				telemetry.addData("BRC", backRight.getCurrentPosition());
+				telemetry.addData("BLC", backLeft.getCurrentPosition());
+			}
 		}
 	}
 
-	private void setMotorMode(DcMotor.RunMode mode) {
+	private void setMotorMode(DcMotor.RunMode mode)
+	{
 		frontRight.setMode(mode);
 		frontLeft.setMode(mode);
 		backRight.setMode(mode);
 		backLeft.setMode(mode);
 	}
 
-	private void setMotorPower(float power) {
+	private void setMotorPower(float power)
+	{
 		frontLeft.setPower(power);
 		frontRight.setPower(power);
 		backRight.setPower(power);
 		backLeft.setPower(power);
 	}
 
-	private void setMotorBehavior(DcMotor.ZeroPowerBehavior behavior) {
+	private void setMotorBehavior(DcMotor.ZeroPowerBehavior behavior)
+	{
 		frontRight.setZeroPowerBehavior(behavior);
 		frontLeft.setZeroPowerBehavior(behavior);
 		backRight.setZeroPowerBehavior(behavior);
@@ -164,7 +163,8 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 
 	public static class AutoJob extends FTCEngine.Core.Auto.Job
 	{
-		public AutoJob(Mode mode, float amount) {
+		public AutoJob(Mode mode, float amount)
+		{
 			this.mode = mode;
 			this.amount = amount;
 		}
@@ -173,11 +173,13 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 		public final float amount;
 
 		@Override
-		public String toString() {
-			return "AutoJob{" + "mode=" + mode + ", amount=" + amount +'}';
+		public String toString()
+		{
+			return "AutoJob{" + "mode=" + mode + ", amount=" + amount + '}';
 		}
 
-		public enum Mode {
+		public enum Mode
+		{
 			MOVE,
 			STRAFE,
 			ROTATE

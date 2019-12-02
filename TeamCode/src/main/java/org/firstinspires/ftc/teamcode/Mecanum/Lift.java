@@ -36,7 +36,7 @@ public class Lift extends Behavior
 
 		if (value < 0f) value *= 0.2f;
 		else value = value * value * Mathf.normalize(value);
-		
+
 		lift.setPower(value);
 	}
 }
