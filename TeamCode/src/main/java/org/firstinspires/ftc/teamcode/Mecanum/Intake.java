@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.Mecanum.Auto.DrivetrainAuto;
+
 import FTCEngine.Core.Input;
 import FTCEngine.Core.OpModeBase;
 import FTCEngine.Core.TeleOp.TeleOpBehavior;
@@ -32,15 +34,26 @@ public class Intake extends TeleOpBehavior
 	private DcMotor intakeRight;
 	private DcMotor guide;
 
+	private float speed;
+
 	@Override
 	public void update()
 	{
 		super.update();
 
-		float input = this.input.getVector(Input.Source.CONTROLLER_2, Input.Button.RIGHT_JOYSTICK).y;
+		if (!opMode.getIsAuto()) setSpeed(this.input.getVector(Input.Source.CONTROLLER_2, Input.Button.RIGHT_JOYSTICK).y);
 
-		intakeRight.setPower(input);
-		intakeLeft.setPower(input);
-		guide.setPower(input);
+		intakeRight.setPower(speed);
+		intakeLeft.setPower(speed);
+		guide.setPower(speed);
 	}
+
+	public float getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(float speed) {
+		this.speed = speed;
+	}
+
 }
