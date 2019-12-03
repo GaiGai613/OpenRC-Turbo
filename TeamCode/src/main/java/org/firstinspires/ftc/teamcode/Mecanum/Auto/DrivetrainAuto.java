@@ -64,7 +64,7 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 			float currentAngle = Mathf.toUnsignedAngle(gyroscope.getAngles().y);
 			float angularDelta = Mathf.toSignedAngle(target - currentAngle);
 
-			if (Math.abs(angularDelta) <= 1f) angularDelta = 0f;
+			if (Math.abs(angularDelta) <= 2.5f) angularDelta = 0f;
 			else angularDelta = angularDelta / 60f;
 
 			setMotorBehavior(Mathf.almostEquals(angularDelta, 0f) ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT);
@@ -75,7 +75,13 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 			backRight.setPower(angularDelta);
 			backLeft.setPower(-angularDelta);
 
-			if (Mathf.almostEquals(angularDelta, 0f)) job.finishJob();
+			if (Mathf.almostEquals(angularDelta, 0f))
+			{
+				job.finishJob();
+
+				setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+				setMotorBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+			}
 
 			telemetry.addData("Target", target);
 			telemetry.addData("currentAngle", currentAngle);

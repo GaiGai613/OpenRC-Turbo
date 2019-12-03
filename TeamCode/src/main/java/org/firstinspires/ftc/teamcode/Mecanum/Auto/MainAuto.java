@@ -34,27 +34,68 @@ public class MainAuto extends AutoOpModeBase
 //		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.ROTATE, 90f));
 
 
-		buffer(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.MOVE, 45f));
-		buffer(intake, new IntakeAuto.AutoJob(1f));
-		execute();
+//		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.MOVE, 24f));
+//
+//		//ALIGNMENT
+//		wait(0.2f);
+//		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.ROTATE,-90f));
+        execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.MOVE,15f));
+        execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.MOVE,-15f));
 
-		wait(1f);
+        wait(.5f);
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.MOVE, -32f));
+        execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.STRAFE,-39f));
+        execute(intake, new IntakeAuto.AutoJob(1f));
 
-		wait(1f);
+        //COLLECTION
+        wait(0.2f);
+        execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.MOVE,10f));
+        execute(intake ,new IntakeAuto.AutoJob(0f));
 
-		execute(intake, new IntakeAuto.AutoJob(0f));
+        wait(0.2f);
+        execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.STRAFE,20f));
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.STRAFE, -63f));
-		execute(intake, new IntakeAuto.AutoJob(-1f));
+        wait(0.2f);
+        execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.MOVE,-85f));
 
-		wait(5f);
+		wait(0.2f);
+        execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.STRAFE, -15f));
 
-        execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.MOVE, -7f));
-
+        //GRAB PLATFORM
         wait(1f);
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.STRAFE, 25f));
+        wait(0.2f);
+        execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.STRAFE, 25f));
+
+        //RELEASE PLATFORM
+        wait(1f);
+
+        wait(0.2f);
+        execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.STRAFE, 2f));
+
+        //PARK
+        wait(0.2f);
+        execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.MOVE, 50f));
+
+
+
+
+
+
+//		wait(1f);
+//
+//		execute(intake, new IntakeAuto.AutoJob(0f));
+//
+//		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.STRAFE, -63f));
+//		execute(intake, new IntakeAuto.AutoJob(-1f));
+//
+//		wait(5f);
+//
+//        execute(intake, new IntakeAuto.AutoJob(0f));
+//        execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.MOVE, -7f));
+//
+//        wait(1f);
+//
+//		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.STRAFE, 30f));
 	}
 }
