@@ -40,10 +40,30 @@ public class Grabber extends Behavior
 	{
 		super.update();
 
-		if (input.getButtonDown(Input.Source.CONTROLLER_2, Input.Button.RIGHT_BUMPER)) isRotated = !isRotated;
-		if (input.getButtonDown(Input.Source.CONTROLLER_2, Input.Button.A)) isSqueezed = !isSqueezed;
+		if (!getIsAuto()) {
+			if (input.getButtonDown(Input.Source.CONTROLLER_2, Input.Button.RIGHT_BUMPER))
+				isRotated = !isRotated;
+			if (input.getButtonDown(Input.Source.CONTROLLER_2, Input.Button.A))
+				isSqueezed = !isSqueezed;
+		}
 
 		rotation.setPosition(isRotated ? 1d : 0d);
 		squeeze.setPosition(isSqueezed ? 0d : 1d);
+	}
+
+	public boolean isRotated() {
+		return isRotated;
+	}
+
+	public void setRotated(boolean rotated) {
+		isRotated = rotated;
+	}
+
+	public boolean isSqueezed() {
+		return isSqueezed;
+	}
+
+	public void setSqueezed(boolean squeezed) {
+		isSqueezed = squeezed;
 	}
 }

@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Mecanum.Gyroscope;
 
 import FTCEngine.Core.Auto.AutoBehavior;
-import FTCEngine.Core.Auto.Job;
-import FTCEngine.Core.Input;
 import FTCEngine.Core.OpModeBase;
 import FTCEngine.Math.Mathf;
 import FTCEngine.Math.Vector2;
@@ -57,9 +55,9 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 	{
 		AutoJob job = getCurrentJob();
 
-		if (job.mode == AutoJob.Mode.ROTATE)
+		if (job.movement == null)
 		{
-			float target = Mathf.toUnsignedAngle(job.amount);
+			float target = Mathf.toUnsignedAngle(job.angle);
 
 			float currentAngle = Mathf.toUnsignedAngle(gyroscope.getAngles().y);
 			float angularDelta = Mathf.toSignedAngle(target - currentAngle);
@@ -89,32 +87,15 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 		}
 		else
 		{
-			int amount;
 
-			switch (job.mode)
-			{
-				case MOVE:
+			int xAmount = Math.round(job.movement.x * INCH_2_TICK_STRAFE);
+			int yAmount = Math.round(job.movement.y * INCH_2_TICK_NORMAL);
 
-					amount = Math.round(job.amount * INCH_2_TICK_NORMAL);
+			frontLeft.setTargetPosition(-xAmount - yAmount);
+			frontRight.setTargetPosition(xAmount - yAmount);
+			backLeft.setTargetPosition(xAmount - yAmount);
+			backRight.setTargetPosition(-xAmount - yAmount);
 
-					frontLeft.setTargetPosition(-amount);
-					frontRight.setTargetPosition(-amount);
-					backLeft.setTargetPosition(-amount);
-					backRight.setTargetPosition(-amount);
-
-					break;
-
-				case STRAFE:
-
-					amount = Math.round(job.amount * INCH_2_TICK_STRAFE);
-
-					frontLeft.setTargetPosition(-amount);
-					frontRight.setTargetPosition(amount);
-					backLeft.setTargetPosition(amount);
-					backRight.setTargetPosition(-amount);
-
-					break;
-			}
 
 			setMotorPower(1f);
 			setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -169,26 +150,28 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 
 	public static class AutoJob extends FTCEngine.Core.Auto.Job
 	{
-		public AutoJob(Mode mode, float amount)
+		public AutoJob(float angle)
 		{
-			this.mode = mode;
-			this.amount = amount;
+			this.angle = angle;
+			this.movement = null;
 		}
 
-		public final Mode mode;
-		public final float amount;
+		public AutoJob(Vector2 movement)
+		{
+			this.angle = 0;
+			this.movement = movement;
+		}
+
+		public final Vector2 movement;
+		public final float angle;
 
 		@Override
-		public String toString()
-		{
-			return "AutoJob{" + "mode=" + mode + ", amount=" + amount + '}';
+		public String toString() {
+			return "AutoJob{" +
+					"movement=" + movement +
+					", angle=" + angle +
+					'}';
 		}
 
-		public enum Mode
-		{
-			MOVE,
-			STRAFE,
-			ROTATE
-		}
 	}
 }
