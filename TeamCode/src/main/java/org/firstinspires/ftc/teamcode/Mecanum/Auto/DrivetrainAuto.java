@@ -63,10 +63,11 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 			float angularDelta = Mathf.toSignedAngle(target - currentAngle);
 
 			if (Math.abs(angularDelta) <= 2.5f) angularDelta = 0f;
-			else if(Math.abs(angularDelta) <= 5.0f) angularDelta = angularDelta/200;
-			else if(Math.abs(angularDelta) <= 10.0f) angularDelta = angularDelta/100f;
+//			else if(Math.abs(angularDelta) <= 5.0f) angularDelta = angularDelta/200f;
+//			else if(Math.abs(angularDelta) <= 10.0f) angularDelta = angularDelta/100f;
 			else angularDelta = angularDelta / 60f;
 
+			angularDelta = Mathf.normalize(angularDelta) * Mathf.clamp(angularDelta, 0.1f, 1f);
 			setMotorBehavior(Mathf.almostEquals(angularDelta, 0f) ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT);
 			setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
