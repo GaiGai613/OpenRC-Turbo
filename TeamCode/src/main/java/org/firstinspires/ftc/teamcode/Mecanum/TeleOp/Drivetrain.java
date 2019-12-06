@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.Mecanum.Gyroscope;
+
 import FTCEngine.Core.Input;
 import FTCEngine.Core.OpModeBase;
 import FTCEngine.Core.TeleOp.TeleOpBehavior;
@@ -23,6 +25,8 @@ public class Drivetrain extends TeleOpBehavior
 	{
 		super.awake(hardwareMap);
 
+		gyroscope = opMode.getBehavior(org.firstinspires.ftc.teamcode.Mecanum.Gyroscope.class);
+
 		frontLeft = hardwareMap.dcMotor.get("frontLeft");
 		frontRight = hardwareMap.dcMotor.get("frontRight");
 		backLeft = hardwareMap.dcMotor.get("backLeft");
@@ -35,6 +39,8 @@ public class Drivetrain extends TeleOpBehavior
 		frontRight.setPower(0d);
 		backLeft.setPower(0d);
 		backRight.setPower(0d);
+
+		input.registerButton(Input.Source.CONTROLLER_1, Input.Button.X);
 	}
 
 	private DcMotor frontRight;
@@ -42,27 +48,38 @@ public class Drivetrain extends TeleOpBehavior
 	private DcMotor backRight;
 	private DcMotor backLeft;
 
+	private Gyroscope gyroscope;
+
 	private Vector2 velocity = Vector2.zero;
 	private float angularVelocity;
+
+	private boolean isGlobalMode;
 
 	@Override
 	public void update()
 	{
 		super.update();
 
-		velocity = input.getVector(Input.Source.CONTROLLER_1, Input.Button.LEFT_JOYSTICK);
-		angularVelocity = input.getVector(Input.Source.CONTROLLER_1, Input.Button.RIGHT_JOYSTICK).x;
+		if (input.getButtonDown(Input.Source.CONTROLLER_1, Input.Button.X)) isGlobalMode = !isGlobalMode;
+
+		Vector2 movementInput = input.getVector(Input.Source.CONTROLLER_1, Input.Button.LEFT_JOYSTICK);
+		float rotationInput = input.getVector(Input.Source.CONTROLLER_1, Input.Button.RIGHT_JOYSTICK).x;
+
+		movementInput = movementInput.mul(movementInput.getMagnitude());
+		rotationInput = rotationInput * Math.abs(rotationInput);
+
+		final float ROTATIONAL_OFFSET = 90;
+
+		setVelocity(isGlobalMode ? movementInput.rotate(ROTATIONAL_OFFSET-gyroscope.getAngles().y) : movementInput);
+		setAngularVelocity(rotationInput);
 
 		if (velocity.equals(Vector2.zero) && Mathf.almostEquals(angularVelocity, 0f))
 		{
 			setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		}
-		else
-		{
+		else {
 			setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 		}
-
-		velocity = velocity.mul(velocity.getMagnitude());
 
 		frontRight.setPower(-velocity.y + velocity.x + angularVelocity);
 		frontLeft.setPower(-velocity.y - velocity.x - angularVelocity);

@@ -21,7 +21,7 @@ public class MainAuto extends AutoOpModeBase
     @Override
     protected void awake() {
         super.awake();
-        getInput().registerButton(Input.Source.CONTROLLER_1, Input.Button.A);
+        getInput().registerButton(Input.Source.CONTROLLER_1, Input.Button.B);
         getInput().registerButton(Input.Source.CONTROLLER_1, Input.Button.X);
         getInput().registerButton(Input.Source.CONTROLLER_1, Input.Button.Y);
     }
@@ -45,14 +45,14 @@ public class MainAuto extends AutoOpModeBase
     protected void configLoop() {
         super.configLoop();
 
-        if (getInput().getButtonDown(Input.Source.CONTROLLER_1, Input.Button.A)) mode = mode.getNext();
+        if (getInput().getButtonDown(Input.Source.CONTROLLER_1, Input.Button.B)) mode = mode.getNext();
 
         if (getInput().getButtonDown(Input.Source.CONTROLLER_1, Input.Button.X)) waitTime+=2;
         if (getInput().getButtonDown(Input.Source.CONTROLLER_1, Input.Button.Y)) waitTime-=2;
 
         waitTime = Mathf.clamp(waitTime,0,30);
 
-        telemetry.addData("Mode (A)",mode);
+        telemetry.addData("Mode (B)",mode);
         telemetry.addData("Wait time (X/Y)", waitTime);
     }
 
@@ -74,6 +74,7 @@ public class MainAuto extends AutoOpModeBase
 //		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.ROTATE,-90f));
 
         if(mode == Mode.POSITION_1_PARK||mode == Mode.POSITION_2_PARK) {
+            wait((float) waitTime);
             execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, mode == Mode.POSITION_1_PARK?-33f:33f)));
             return;
         }
@@ -92,7 +93,7 @@ public class MainAuto extends AutoOpModeBase
         execute(intake ,new IntakeAuto.AutoJob(0f));
 
         wait(0.2f);
-        execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(20f, 0f)));
+        execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(23f, 0f)));
 
         wait(0.2f);
         execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -85f)));
@@ -106,8 +107,10 @@ public class MainAuto extends AutoOpModeBase
             wait(2.0f);
 
             execute(intake ,new IntakeAuto.AutoJob(0f));
-            execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -20)));
+            execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(5f, 0)));
+            wait(1.0f);
 
+            execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -20)));
             return;
         }
 
@@ -128,7 +131,7 @@ public class MainAuto extends AutoOpModeBase
 
         //PARK
         wait(0.2f);
-        execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 50f)));
+        execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 45f)));
 
 
 

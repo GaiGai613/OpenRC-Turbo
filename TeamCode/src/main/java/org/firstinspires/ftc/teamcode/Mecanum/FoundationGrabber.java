@@ -17,7 +17,7 @@ public class FoundationGrabber extends TeleOpBehavior {
         super.awake(hardwareMap);
 
         puller = hardwareMap.servo.get("puller");
-        puller.setPosition(0);
+        puller.setPosition(1);
 
         input.registerButton(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER);
     }
@@ -28,10 +28,10 @@ public class FoundationGrabber extends TeleOpBehavior {
         super.update();
 
         if(input.getButton(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER)) {
-            puller.setPosition(1);
+            puller.setPosition(.1);
         }
         else {
-            puller.setPosition(0);
+            puller.setPosition(1);
         }
     }
 }

@@ -63,6 +63,8 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 			float angularDelta = Mathf.toSignedAngle(target - currentAngle);
 
 			if (Math.abs(angularDelta) <= 2.5f) angularDelta = 0f;
+			else if(Math.abs(angularDelta) <= 5.0f) angularDelta = angularDelta/200;
+			else if(Math.abs(angularDelta) <= 10.0f) angularDelta = angularDelta/100f;
 			else angularDelta = angularDelta / 60f;
 
 			setMotorBehavior(Mathf.almostEquals(angularDelta, 0f) ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT);
@@ -111,10 +113,10 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 			}
 			else
 			{
-				telemetry.addData("FR", frontRight.getTargetPosition());
-				telemetry.addData("FL", frontLeft.getTargetPosition());
-				telemetry.addData("BR", backRight.getTargetPosition());
-				telemetry.addData("BL", backLeft.getTargetPosition());
+//				telemetry.addData("FR", frontRight.getTargetPosition());
+//				telemetry.addData("FL", frontLeft.getTargetPosition());
+//				telemetry.addData("BR", backRight.getTargetPosition());
+//				telemetry.addData("BL", backLeft.getTargetPosition());
 
 				telemetry.addData("FRC", frontRight.getCurrentPosition());
 				telemetry.addData("FLC", frontLeft.getCurrentPosition());
