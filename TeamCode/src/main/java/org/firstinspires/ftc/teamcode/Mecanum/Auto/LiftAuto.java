@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import FTCEngine.Core.Auto.AutoBehavior;
 import FTCEngine.Core.OpModeBase;
+import FTCEngine.Math.Mathf;
 
 public class LiftAuto extends AutoBehavior<LiftAuto.AutoJob> {
 
@@ -22,38 +23,23 @@ public class LiftAuto extends AutoBehavior<LiftAuto.AutoJob> {
     }
 
     private DcMotor lift;
-    private float startTime = -1f;
 
     @Override
     protected void updateJob() {
 
         lift.setPower(getCurrentJob().direction);
+        lift.setZeroPowerBehavior(Mathf.almostEquals(getCurrentJob().direction,0f) ? DcMotor.ZeroPowerBehavior.BRAKE: DcMotor.ZeroPowerBehavior.FLOAT);
 
-        if (startTime < 0f) startTime = time.getTime();
-        else if (startTime+getCurrentJob().time >= time.getTime()) {
-            getCurrentJob().finishJob();
-            lift.setPower(0f);
-            startTime = -1f;
-        }
+        getCurrentJob().finishJob();
     }
 
     public static class AutoJob extends FTCEngine.Core.Auto.Job
     {
-        public AutoJob(int time, float direction)
+        public AutoJob(float direction)
         {
-            this.time = time;
             this.direction = direction;
         }
 
-        public final float time;
         public final float direction;
-
-        @Override
-        public String toString() {
-            return "AutoJob{" +
-                    "time=" + time +
-                    ", direction=" + direction +
-                    '}';
-        }
     }
 }

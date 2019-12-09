@@ -7,7 +7,7 @@ import FTCEngine.Core.Input;
 import FTCEngine.Core.OpModeBase;
 import FTCEngine.Core.TeleOp.TeleOpBehavior;
 
-public class FoundationGrabber extends TeleOpBehavior {
+public class FoundationGrabber extends TeleOpBehavior  {
 
     public FoundationGrabber(OpModeBase opMode) {
         super(opMode);
@@ -23,15 +23,20 @@ public class FoundationGrabber extends TeleOpBehavior {
     }
 
     Servo puller;
+    boolean isGrabbing;
 
     public void update() {
         super.update();
 
-        if(input.getButton(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER)) {
-            puller.setPosition(.1);
-        }
-        else {
-            puller.setPosition(1);
-        }
+        if (!getIsAuto() && input.getButtonDown(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER)) isGrabbing = !isGrabbing;
+        puller.setPosition(isGrabbing ? 0.1f : 1f);
+    }
+
+    public boolean isGrabbing() {
+        return isGrabbing;
+    }
+
+    public void setGrabbing(boolean grabbing) {
+        isGrabbing = grabbing;
     }
 }

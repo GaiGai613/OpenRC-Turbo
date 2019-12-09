@@ -55,9 +55,9 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 	{
 		AutoJob job = getCurrentJob();
 
-		if (job.movement == null)
+		if (job.getMovement() == null)
 		{
-			float target = Mathf.toUnsignedAngle(job.angle);
+			float target = Mathf.toUnsignedAngle(job.getAngle());
 
 			float currentAngle = Mathf.toUnsignedAngle(gyroscope.getAngles().y);
 			float angularDelta = Mathf.toSignedAngle(target - currentAngle);
@@ -91,9 +91,10 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 		}
 		else
 		{
+			Vector2 movement = job.getMovement().rotate(-gyroscope.getAngles().y);
 
-			int xAmount = Math.round(job.movement.x * INCH_2_TICK_STRAFE);
-			int yAmount = Math.round(job.movement.y * INCH_2_TICK_NORMAL);
+			int xAmount = Math.round(movement.x * INCH_2_TICK_STRAFE);
+			int yAmount = Math.round(movement.y * INCH_2_TICK_NORMAL);
 
 			frontLeft.setTargetPosition(-xAmount - yAmount);
 			frontRight.setTargetPosition(xAmount - yAmount);
@@ -156,27 +157,49 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 	{
 		public AutoJob(float angle)
 		{
-			this.angle = angle;
-			this.movement = null;
+			setAngle(angle);
 		}
 
 		public AutoJob(Vector2 movement)
 		{
-			this.angle = 0;
-			this.movement = movement;
+			setAngle(0);
+			setMovement(movement);
 		}
 
-		public final Vector2 movement;
-		public final float angle;
+		private Vector2 movement;
+		private float angle;
 
-		@Override
-		public String toString()
-		{
-			return "AutoJob{" +
-			       "movement=" + movement +
-			       ", angle=" + angle +
-			       '}';
-		}
+        @Override
+        public void reverse() {
+            super.reverse();
 
-	}
+            setAngle(-getAngle());
+            if (getMovement() != null) setMovement(new Vector2(-getMovement().x,getMovement().y));
+        }
+
+        public Vector2 getMovement() {
+            return movement;
+        }
+
+        private void setMovement(Vector2 movement) {
+            this.movement = movement;
+        }
+
+        public float getAngle() {
+            return angle;
+        }
+
+        private void setAngle(float angle) {
+            this.angle = angle;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "AutoJob{" +
+                    "movement=" + getMovement() +
+                    ", angle=" + getAngle() +
+                    '}';
+        }
+    }
 }
