@@ -84,16 +84,13 @@ public class MainAuto extends AutoOpModeBase
 			return;
 		}
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 8f)));
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -8f)));
 
 		wait(delay);
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(2, 0f)));
-
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-42f, 0f)));
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-45f, 0f)));
 		execute(intake, new IntakeAuto.AutoJob(1f));
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(2f, 0f)));
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(8f, 0f)));
 
 		//COLLECTION
 		wait(delay);
@@ -104,8 +101,7 @@ public class MainAuto extends AutoOpModeBase
 
 		wait(delay);
 		execute(drivetrain, new DrivetrainAuto.AutoJob(0f)); //Resets rotation
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -82f)));
-		execute(intake, new IntakeAuto.AutoJob(0f));
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -78f)));
 
 		if (mode == Mode.POSITION_1_NO_FOUNDATION)
 		{
@@ -115,11 +111,12 @@ public class MainAuto extends AutoOpModeBase
 			execute(intake, new IntakeAuto.AutoJob(-1f));
 			wait(delay);
 
-			execute(intake, new IntakeAuto.AutoJob(0f));
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(5f, 0)));
 			wait(delay);
 
-			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -20)));
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -50)));
+			execute(intake, new IntakeAuto.AutoJob(0f));
+
 			return;
 		}
 
@@ -130,9 +127,8 @@ public class MainAuto extends AutoOpModeBase
 		//GRAB PLATFORM
 		wait(1f);
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(0f)); //Resets rotation
-
 		wait(delay);
+		execute(drivetrain, new DrivetrainAuto.AutoJob(0f)); //Resets rotation
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(45f, 0f)));
 
 		//RELEASE PLATFORM
@@ -140,38 +136,21 @@ public class MainAuto extends AutoOpModeBase
 
 		wait(delay);
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(2f, 0f)));
+		execute(drivetrain, new DrivetrainAuto.AutoJob(0f)); //Resets rotation
 
 		//PARK
 		wait(delay);
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 20f)));
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 35f)));
 
 		wait(delay);
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-25f, 0f)));
 
 		wait(delay);
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 30f)));
-
-
-//		wait(1f);
-//
-//		execute(intake, new IntakeAuto.AutoJob(0f));
-//
-//		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.STRAFE, -63f));
-//		execute(intake, new IntakeAuto.AutoJob(-1f));
-//
-//		wait(5f);
-//
-//        execute(intake, new IntakeAuto.AutoJob(0f));
-//        execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.MOVE, -7f));
-//
-//        wait(1f);
-//
-//		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.STRAFE, 30f));
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 35f)));
 	}
 
 	private enum Mode
 	{
-
 		POSITION_1_FULL(0),
 		POSITION_1_NO_FOUNDATION(1),
 		POSITION_1_PARK(2),
