@@ -69,6 +69,7 @@ public class MainAuto extends AutoOpModeBase
 		IntakeAuto intake = getBehavior(IntakeAuto.class);
 		GrabberAuto grabber = getBehavior(GrabberAuto.class);
         LiftAuto lift = getBehavior(LiftAuto.class);
+        FoundationGrabberAuto foundationGrabber = getBehavior(FoundationGrabberAuto.class);
 
 		final float delay = 0.01f;
 
@@ -90,24 +91,24 @@ public class MainAuto extends AutoOpModeBase
 			return;
 		}
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -8f)));
-
-		wait(delay);
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -9f)));
+		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(false));
+        execute(drivetrain, new DrivetrainAuto.AutoJob(0f)); //Resets rotation
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-50f, 0f)));
 		execute(intake, new IntakeAuto.AutoJob(1f));
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(12f, 0f)));
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(13f, 0f)));
 
 		//COLLECTION
 		wait(delay);
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 12f)));
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f)));
 
 		wait(delay);
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(23f, 0f)));
 
 		wait(delay);
 		execute(drivetrain, new DrivetrainAuto.AutoJob(0f)); //Resets rotation
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -75f)));
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -73f)));
         execute(intake, new IntakeAuto.AutoJob(0f));
 
 		if (mode == Mode.POSITION_1_NO_FOUNDATION)
@@ -129,17 +130,21 @@ public class MainAuto extends AutoOpModeBase
 
 		wait(delay);
 		execute(drivetrain, new DrivetrainAuto.AutoJob(0f)); //Resets rotation
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-15f, 0f)));
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-12.5f, 0f)));
 
 		//GRAB PLATFORM
+		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(true));
 		wait(1f);
 
+        execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(50f, 0f)));
+
         execute(drivetrain, new DrivetrainAuto.AutoJob(90f));
-        execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0, -10f)));
+        execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0, -5f)));
 
         //RELEASE PLATFORM
+		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(false));
         wait(1f);
-
+        execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f,5f)));
         execute(drivetrain, new DrivetrainAuto.AutoJob(0f));
 
         //Use lift to release the stone
@@ -150,7 +155,7 @@ public class MainAuto extends AutoOpModeBase
 
         execute(grabber, new GrabberAuto.AutoJob(true, true));
         wait(0.5f);
-        execute(lift, new LiftAuto.AutoJob(-0.3f));
+        execute(lift, new LiftAuto.AutoJob(-0.1f));
         wait(0.7f);
 
         execute(grabber, new GrabberAuto.AutoJob(false, true));
@@ -160,10 +165,11 @@ public class MainAuto extends AutoOpModeBase
 
         execute(grabber, new GrabberAuto.AutoJob(false, false));
         wait(0.5f);
-        execute(lift, new LiftAuto.AutoJob(-0.3f));
+        execute(lift, new LiftAuto.AutoJob(-0.1f));
         wait(0.2f);
 
         execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(5, 0f)));
+        execute(lift, new LiftAuto.AutoJob(0.0f));
         execute(drivetrain, new DrivetrainAuto.AutoJob(0f)); //Resets rotation
 
         wait(delay);

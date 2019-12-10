@@ -63,8 +63,6 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 			float angularDelta = Mathf.toSignedAngle(target - currentAngle);
 
 			if (Math.abs(angularDelta) <= 2.5f) angularDelta = 0f;
-//			else if (Math.abs(angularDelta) <= 5.0f) angularDelta = angularDelta / 200;
-//			else if (Math.abs(angularDelta) <= 10.0f) angularDelta = angularDelta / 100f;
 			else angularDelta = angularDelta / 60f;
 
 			angularDelta = Mathf.normalize(angularDelta) * Mathf.clamp(Math.abs(angularDelta), 0.2f, 1f);
