@@ -34,8 +34,8 @@ public class FoundationGrabber extends TeleOpBehavior  {
 
         if (!getIsAuto() && input.getButtonDown(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER)) isGrabbing = !isGrabbing;
 
-        pullerOne.setPosition(isGrabbing ? 1.0f : 0.1f);
-        pullerTwo.setPosition(isGrabbing ? 0.95f : 0.1f);
+        pullerOne.setPosition(isGrabbing ? 1.0f : 0.5f);
+        pullerTwo.setPosition(isGrabbing ? 0.95f : 0.5f);
     }
 
     public boolean isGrabbing() {

@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
+import FTCEngine.Core.Input;
 import FTCEngine.Core.OpModeBase;
 import FTCEngine.Core.TeleOp.TeleOpBehavior;
 import FTCEngine.Math.Vector3;
@@ -44,11 +45,18 @@ public class Gyroscope extends TeleOpBehavior
 				new Position(DistanceUnit.METER, 0d, 0d, 0d, 0),
 				new Velocity(DistanceUnit.METER, 0d, 0d, 0d, 0), 5);
 
+		input.registerButton(Input.Source.CONTROLLER_1, Input.Button.Y);
 		initialAngles = getAnglesInternal();
 	}
 
 	private BNO055IMU imu;
 	private Vector3 initialAngles;
+
+	@Override
+	public void update() {
+		super.update();
+		if (!getIsAuto() && input.getButtonDown(Input.Source.CONTROLLER_1, Input.Button.Y)) initialAngles = getAnglesInternal();
+	}
 
 	private Vector3 getAnglesInternal()
 	{

@@ -55,7 +55,21 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 	{
 		AutoJob job = getCurrentJob();
 
-		if (job.getMovement() == null)
+		if (!job.useEncoders) {
+
+			Vector2 velocity = job.getMovement();
+
+			setMotorBehavior(velocity.equals(Vector2.zero) ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT);
+			setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+			frontRight.setPower(-velocity.y + velocity.x);
+			frontLeft.setPower(-velocity.y - velocity.x);
+			backRight.setPower(-velocity.y - velocity.x);
+			backLeft.setPower(-velocity.y + velocity.x);
+
+			getCurrentJob().finishJob();
+
+		} else { if (job.getMovement() == null)
 		{
 			float target = Mathf.toUnsignedAngle(job.getAngle());
 
@@ -63,7 +77,7 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 			float angularDelta = Mathf.toSignedAngle(target - currentAngle);
 
 			if (Math.abs(angularDelta) <= 2.5f) angularDelta = 0f;
-			else angularDelta = angularDelta / 60f;
+			else angularDelta = angularDelta / 50f;
 
 			angularDelta = Mathf.normalize(angularDelta) * Mathf.clamp(Math.abs(angularDelta), 0.2f, 1f);
 
@@ -123,7 +137,7 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 				telemetry.addData("FLC", frontLeft.getCurrentPosition());
 				telemetry.addData("BRC", backRight.getCurrentPosition());
 				telemetry.addData("BLC", backLeft.getCurrentPosition());
-			}
+			}}
 		}
 	}
 
@@ -156,16 +170,24 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 		public AutoJob(float angle)
 		{
 			setAngle(angle);
+			useEncoders = true;
 		}
 
 		public AutoJob(Vector2 movement)
 		{
 			setAngle(0);
 			setMovement(movement);
+			useEncoders = true;
+		}
+
+		public AutoJob(Vector2 direction, float power) {
+			setMovement(direction.normalize().mul(power));
+			useEncoders = false;
 		}
 
 		private Vector2 movement;
 		private float angle;
+		public final boolean useEncoders;
 
         @Override
         public void reverse() {
@@ -191,13 +213,13 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
             this.angle = angle;
         }
 
-        @Override
-        public String toString()
-        {
-            return "AutoJob{" +
-                    "movement=" + getMovement() +
-                    ", angle=" + getAngle() +
-                    '}';
-        }
-    }
+		@Override
+		public String toString() {
+			return "AutoJob{" +
+					"movement=" + movement +
+					", angle=" + angle +
+					", useEncoders=" + useEncoders +
+					'}';
+		}
+	}
 }
