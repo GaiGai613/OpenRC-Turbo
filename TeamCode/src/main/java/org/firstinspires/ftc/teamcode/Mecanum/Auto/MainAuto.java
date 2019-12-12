@@ -35,18 +35,33 @@ public class MainAuto extends AutoOpModeBase
 	{
 		behaviorList.add(new Gyroscope(this));
 		behaviorList.add(new DrivetrainAuto(this));
+		behaviorList.add(new TouchSensorAuto(this));
+		behaviorList.add(new LiftAuto(this));
+
 		behaviorList.add(new Intake(this));
 		behaviorList.add(new IntakeAuto(this));
-		behaviorList.add(new LiftAuto(this));
+
 		behaviorList.add(new Grabber(this));
 		behaviorList.add(new GrabberAuto(this));
-        behaviorList.add(new FoundationGrabber(this));
-        behaviorList.add(new FoundationGrabberAuto(this));
-        behaviorList.add(new TouchSensorAuto(this));
+
+		behaviorList.add(new FoundationGrabber(this));
+		behaviorList.add(new FoundationGrabberAuto(this));
 	}
 
 	private Mode mode = Mode.POSITION_1_FULL;
 	private int waitTime = 20;
+
+	private final float delay = 0.01f;
+
+	private DrivetrainAuto drivetrain;
+	private IntakeAuto intake;
+	private GrabberAuto grabber;
+	private LiftAuto lift;
+	private FoundationGrabberAuto foundationGrabber;
+	private TouchSensorAuto touchSensor;
+
+	private float rotation;
+	private boolean isOuttakeOpen;
 
 	@Override
 	protected void configLoop()
@@ -64,44 +79,78 @@ public class MainAuto extends AutoOpModeBase
 		telemetry.addData("Wait time (X/Y)", waitTime);
 	}
 
-	@Override
-	protected void queueJobs()
+	private void setup()
 	{
-		DrivetrainAuto drivetrain = getBehavior(DrivetrainAuto.class);
-		IntakeAuto intake = getBehavior(IntakeAuto.class);
-		GrabberAuto grabber = getBehavior(GrabberAuto.class);
-        LiftAuto lift = getBehavior(LiftAuto.class);
-        FoundationGrabberAuto foundationGrabber = getBehavior(FoundationGrabberAuto.class);
-		TouchSensorAuto touchSensor = getBehavior(TouchSensorAuto.class);
+		drivetrain = getBehavior(DrivetrainAuto.class);
+		intake = getBehavior(IntakeAuto.class);
+		grabber = getBehavior(GrabberAuto.class);
+		lift = getBehavior(LiftAuto.class);
+		foundationGrabber = getBehavior(FoundationGrabberAuto.class);
+		touchSensor = getBehavior(TouchSensorAuto.class);
+	}
 
-		final float delay = 0.01f;
-
+	private void tuneDrivetrain()
+	{
 //		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.MOVE, 24f));
 //		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.STRAFE, 24f));
 //		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.ROTATE, 90f));
+	}
 
+	private void simplePark()
+	{
+		wait((float)waitTime);
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, mode == Mode.POSITION_1_PARK ? -33f : 33f)));
+	}
 
-//		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.MOVE, 24f));
-//
-//		//ALIGNMENT
-//		wait(0.2f);
-//		execute(drivetrain, new DrivetrainAuto.AutoJob(DrivetrainAuto.AutoJob.Mode.ROTATE,-90f));
+	private void setRotation(float rotation)
+	{
+		this.rotation = rotation;
+		execute(drivetrain, new DrivetrainAuto.AutoJob(rotation));
+	}
+
+	private void resetRotation()
+	{
+		execute(drivetrain, new DrivetrainAuto.AutoJob(rotation));
+	}
+
+	private void toggleOuttake()
+	{
+		execute(grabber, new GrabberAuto.AutoJob(true, isOuttakeOpen));
+		wait(0.5f);
+		execute(lift, new LiftAuto.AutoJob(1.0f));
+		wait(2.5f);
+
+		execute(grabber, new GrabberAuto.AutoJob(true, !isOuttakeOpen));
+		wait(0.3f);
+		execute(lift, new LiftAuto.AutoJob(-0.2f));
+		wait(0.4f);
+
+		execute(grabber, new GrabberAuto.AutoJob(false, !isOuttakeOpen));
+		wait(0.1f);
+
+		isOuttakeOpen = !isOuttakeOpen;
+	}
+
+	@Override
+	protected void queueJobs()
+	{
+		setup();
+//		tuneDrivetrain();
 
 		if (mode == Mode.POSITION_1_PARK || mode == Mode.POSITION_2_PARK)
 		{
-			wait((float)waitTime);
-			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, mode == Mode.POSITION_1_PARK ? -33f : 33f)));
+			simplePark();
 			return;
 		}
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -9f)));
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(false));
-        execute(drivetrain, new DrivetrainAuto.AutoJob(0f)); //Resets rotation
+		execute(drivetrain, new DrivetrainAuto.AutoJob(0f)); //Resets rotation
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-50f, 0f)));
 		execute(intake, new IntakeAuto.AutoJob(1f));
 
-		buffer(lift, new LiftAuto.AutoJob(1));
+		buffer(lift, new LiftAuto.AutoJob(1f));
 		buffer(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(13f, 0f)));
 		execute();
 
@@ -112,97 +161,53 @@ public class MainAuto extends AutoOpModeBase
 		buffer(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(23f, 0f)));
 		execute();
 
-		//wait(delay);
-		execute(drivetrain, new DrivetrainAuto.AutoJob(0f)); //Resets rotation
+		resetRotation();
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -92f)));
-        execute(intake, new IntakeAuto.AutoJob(0f));
+		resetRotation();
 
 		if (mode == Mode.POSITION_1_NO_FOUNDATION)
 		{
-			execute(drivetrain, new DrivetrainAuto.AutoJob(180f));
-			//wait(delay);
+			setRotation(180f);
 
 			execute(intake, new IntakeAuto.AutoJob(-1f));
-			//wait(delay);
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-5f, 50)));
 
-			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-5f, 0)));
-			//wait(delay);
-
-			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 50)));
-			execute(intake, new IntakeAuto.AutoJob(0f));
-
+			setRotation(0f);
 			return;
 		}
-
-
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 15f)));
 
 		buffer(drivetrain, new DrivetrainAuto.AutoJob(Vector2.left, 0.5f));
-		buffer(touchSensor, new TouchSensorAuto.AutoJob(TouchSensorAuto.AutoJob.Mode.EXIT_WITH_ONE_TOUCHED));
+		buffer(touchSensor, new TouchSensorAuto.AutoJob(TouchSensorAuto.AutoJob.Mode.EXIT_WITH_BOTH_TOUCHED));
 		execute();
 
-		buffer(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0));
-		execute();
+		execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0));
 
 		//GRAB PLATFORM
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(true));
 		wait(0.8f);
 
-        execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(30f, 25f)));
-        execute(drivetrain, new DrivetrainAuto.AutoJob(90f));
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(30f, 25f)));
+		setRotation(90f);
 
-//        execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0, -10f)));
-
-        //RELEASE PLATFORM
+		//RELEASE PLATFORM
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(false));
 
-        wait(0.5f);
-        execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f,10f)));
-        execute(drivetrain, new DrivetrainAuto.AutoJob(0f));
-        execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f,-22f)));
+		wait(0.5f);
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f)));
+		setRotation(0f);
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -22f)));
 
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(true));
 
-        //Use lift to release the stone
-        execute(grabber, new GrabberAuto.AutoJob(true, false));
-        wait(0.5f);
-        execute(lift ,new LiftAuto.AutoJob(1.0f));
-        wait(4f);
+		//Use lift to release the stone
+		toggleOuttake();
 
-        execute(grabber, new GrabberAuto.AutoJob(true, true));
-		wait(0.5f);
-        execute(lift, new LiftAuto.AutoJob(-0.1f));
-        wait(0.7f);
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(5, 0f)));
 
-        execute(grabber, new GrabberAuto.AutoJob(false, true));
-        wait(0.1f);
-
-        execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(5, 0f)));
-//        execute(lift, new LiftAuto.AutoJob(-0.1f));
-        execute(drivetrain, new DrivetrainAuto.AutoJob(0f)); //Resets rotation
-
-        //wait(delay);
-        execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 35)));
-
-
-//		//wait(delay);
-//		execute(drivetrain, new DrivetrainAuto.AutoJob(0f)); //Resets rotation
-//		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(45f, 0f)));
-
-//		//wait(delay);
-//		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(2f, 0f)));
-//		execute(drivetrain, new DrivetrainAuto.AutoJob(0f)); //Resets rotation
-//
-//		//PARK
-//		//wait(delay);
-//		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 35f)));
-//
-//		//wait(delay);
-//		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-25f, 0f)));
-//
-//		//wait(delay);
-//		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 30f)));
+		resetRotation();
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 35)));
 	}
 
 	private enum Mode

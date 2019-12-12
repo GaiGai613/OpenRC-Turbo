@@ -46,7 +46,7 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 	private Gyroscope gyroscope;
 
 	private final float INCH_2_TICK_NORMAL = 63.8571428571f;
-	private final float INCH_2_TICK_STRAFE = INCH_2_TICK_NORMAL * 1.166667f;
+	private final float INCH_2_TICK_STRAFE = 74.5f;
 
 	private final float DEGREE_2_TICK = 10.0f;
 
@@ -55,89 +55,92 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 	{
 		AutoJob job = getCurrentJob();
 
-		if (!job.useEncoders) {
-
-			Vector2 velocity = job.getMovement();
-
-			setMotorBehavior(velocity.equals(Vector2.zero) ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT);
-			setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-			frontRight.setPower(-velocity.y + velocity.x);
-			frontLeft.setPower(-velocity.y - velocity.x);
-			backRight.setPower(-velocity.y - velocity.x);
-			backLeft.setPower(-velocity.y + velocity.x);
-
-			getCurrentJob().finishJob();
-
-		} else { if (job.getMovement() == null)
+		if (job.useEncoders)
 		{
-			float target = Mathf.toUnsignedAngle(job.getAngle());
-
-			float currentAngle = Mathf.toUnsignedAngle(gyroscope.getAngles().y);
-			float angularDelta = Mathf.toSignedAngle(target - currentAngle);
-
-			if (Math.abs(angularDelta) <= 2.5f) angularDelta = 0f;
-			else angularDelta = angularDelta / 50f;
-
-			angularDelta = Mathf.normalize(angularDelta) * Mathf.clamp(Math.abs(angularDelta), 0.2f, 1f);
-
-			setMotorBehavior(Mathf.almostEquals(angularDelta, 0f) ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT);
-			setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-			frontRight.setPower(angularDelta);
-			frontLeft.setPower(-angularDelta);
-			backRight.setPower(angularDelta);
-			backLeft.setPower(-angularDelta);
-
-			if (Mathf.almostEquals(angularDelta, 0f))
+			if (job.getMovement() == null)
 			{
-				job.finishJob();
+				float target = Mathf.toUnsignedAngle(job.getAngle());
 
-				setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-				setMotorBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-			}
+				float currentAngle = Mathf.toUnsignedAngle(gyroscope.getAngles().y);
+				float angularDelta = Mathf.toSignedAngle(target - currentAngle);
 
-			telemetry.addData("Target", target);
-			telemetry.addData("currentAngle", currentAngle);
-			telemetry.addData("angularDelta", angularDelta);
-		}
-		else
-		{
-			Vector2 movement = job.getMovement().rotate(-gyroscope.getAngles().y);
+				if (Math.abs(angularDelta) <= 2.5f) angularDelta = 0f;
+				else angularDelta = angularDelta / 50f;
 
-			int xAmount = Math.round(movement.x * INCH_2_TICK_STRAFE);
-			int yAmount = Math.round(movement.y * INCH_2_TICK_NORMAL);
+				angularDelta = Mathf.normalize(angularDelta) * Mathf.clamp(Math.abs(angularDelta), 0.2f, 1f);
 
-			frontLeft.setTargetPosition(-xAmount - yAmount);
-			frontRight.setTargetPosition(xAmount - yAmount);
-			backLeft.setTargetPosition(xAmount - yAmount);
-			backRight.setTargetPosition(-xAmount - yAmount);
+				setMotorBehavior(Mathf.almostEquals(angularDelta, 0f) ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT);
+				setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+				frontRight.setPower(angularDelta);
+				frontLeft.setPower(-angularDelta);
+				backRight.setPower(angularDelta);
+				backLeft.setPower(-angularDelta);
 
-			setMotorPower(1f);
-			setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
-			setMotorBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+				if (Mathf.almostEquals(angularDelta, 0f))
+				{
+					job.finishJob();
 
-			if (!frontLeft.isBusy() && !frontRight.isBusy() && !backLeft.isBusy() && !backRight.isBusy())
-			{
-				setMotorPower(0f);
-				setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-				setMotorBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+					setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+					setMotorBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+				}
 
-				job.finishJob();
+				telemetry.addData("Target", target);
+				telemetry.addData("currentAngle", currentAngle);
+				telemetry.addData("angularDelta", angularDelta);
 			}
 			else
 			{
+				Vector2 movement = job.getMovement().rotate(-gyroscope.getAngles().y);
+
+				int xAmount = Math.round(movement.x * INCH_2_TICK_STRAFE);
+				int yAmount = Math.round(movement.y * INCH_2_TICK_NORMAL);
+
+				frontLeft.setTargetPosition(-xAmount - yAmount);
+				frontRight.setTargetPosition(xAmount - yAmount);
+				backLeft.setTargetPosition(xAmount - yAmount);
+				backRight.setTargetPosition(-xAmount - yAmount);
+
+
+				setMotorPower(1f);
+				setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
+				setMotorBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+				if (!frontLeft.isBusy() && !frontRight.isBusy() && !backLeft.isBusy() && !backRight.isBusy())
+				{
+					setMotorPower(0f);
+					setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+					setMotorBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+					job.finishJob();
+				}
+				else
+				{
 //				telemetry.addData("FR", frontRight.getTargetPosition());
 //				telemetry.addData("FL", frontLeft.getTargetPosition());
 //				telemetry.addData("BR", backRight.getTargetPosition());
 //				telemetry.addData("BL", backLeft.getTargetPosition());
 
-				telemetry.addData("FRC", frontRight.getCurrentPosition());
-				telemetry.addData("FLC", frontLeft.getCurrentPosition());
-				telemetry.addData("BRC", backRight.getCurrentPosition());
-				telemetry.addData("BLC", backLeft.getCurrentPosition());
-			}}
+					telemetry.addData("FRC", frontRight.getCurrentPosition());
+					telemetry.addData("FLC", frontLeft.getCurrentPosition());
+					telemetry.addData("BRC", backRight.getCurrentPosition());
+					telemetry.addData("BLC", backLeft.getCurrentPosition());
+				}
+			}
+		}
+		else
+		{
+			Vector2 power = job.getMovement();
+
+			setMotorBehavior(power.equals(Vector2.zero) ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT);
+			setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+			frontRight.setPower(-power.y + power.x);
+			frontLeft.setPower(-power.y - power.x);
+			backRight.setPower(-power.y - power.x);
+			backLeft.setPower(-power.y + power.x);
+
+			getCurrentJob().finishJob();
 		}
 	}
 
@@ -180,7 +183,8 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 			useEncoders = true;
 		}
 
-		public AutoJob(Vector2 direction, float power) {
+		public AutoJob(Vector2 direction, float power)
+		{
 			setMovement(direction.normalize().mul(power));
 			useEncoders = false;
 		}
@@ -189,37 +193,43 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 		private float angle;
 		public final boolean useEncoders;
 
-        @Override
-        public void reverse() {
-            super.reverse();
+		@Override
+		public void reverse()
+		{
+			super.reverse();
 
-            setAngle(-getAngle());
-            if (getMovement() != null) setMovement(new Vector2(-getMovement().x,getMovement().y));
-        }
+			setAngle(-getAngle());
+			if (getMovement() != null) setMovement(new Vector2(-getMovement().x, getMovement().y));
+		}
 
-        public Vector2 getMovement() {
-            return movement;
-        }
+		public Vector2 getMovement()
+		{
+			return movement;
+		}
 
-        private void setMovement(Vector2 movement) {
-            this.movement = movement;
-        }
+		private void setMovement(Vector2 movement)
+		{
+			this.movement = movement;
+		}
 
-        public float getAngle() {
-            return angle;
-        }
+		public float getAngle()
+		{
+			return angle;
+		}
 
-        private void setAngle(float angle) {
-            this.angle = angle;
-        }
+		private void setAngle(float angle)
+		{
+			this.angle = angle;
+		}
 
 		@Override
-		public String toString() {
+		public String toString()
+		{
 			return "AutoJob{" +
-					"movement=" + movement +
-					", angle=" + angle +
-					", useEncoders=" + useEncoders +
-					'}';
+			       "movement=" + movement +
+			       ", angle=" + angle +
+			       ", useEncoders=" + useEncoders +
+			       '}';
 		}
 	}
 }
