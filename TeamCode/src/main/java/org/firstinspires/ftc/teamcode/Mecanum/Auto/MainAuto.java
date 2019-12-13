@@ -61,7 +61,6 @@ public class MainAuto extends AutoOpModeBase
 	private TouchSensorAuto touchSensor;
 
 	private float rotation;
-	private boolean isOuttakeOpen;
 
 	@Override
 	protected void configLoop()
@@ -113,24 +112,6 @@ public class MainAuto extends AutoOpModeBase
 		execute(drivetrain, new DrivetrainAuto.AutoJob(rotation));
 	}
 
-	private void toggleOuttake()
-	{
-		execute(grabber, new GrabberAuto.AutoJob(true, isOuttakeOpen));
-		wait(0.5f);
-		execute(lift, new LiftAuto.AutoJob(1.0f));
-		wait(2.5f);
-
-		execute(grabber, new GrabberAuto.AutoJob(true, !isOuttakeOpen));
-		wait(0.3f);
-		execute(lift, new LiftAuto.AutoJob(-0.2f));
-		wait(0.4f);
-
-		execute(grabber, new GrabberAuto.AutoJob(false, !isOuttakeOpen));
-		wait(0.1f);
-
-		isOuttakeOpen = !isOuttakeOpen;
-	}
-
 	@Override
 	protected void queueJobs()
 	{
@@ -143,31 +124,34 @@ public class MainAuto extends AutoOpModeBase
 			return;
 		}
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -9f))); //Drops intake
-		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(false)); //Puts foundation grabber to middle
-		execute(drivetrain, new DrivetrainAuto.AutoJob(0f)); //Resets rotation
-
-// 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-49f, 0f))); //Goes to blocks and a bit more to push blocks out of the waay
-
-		buffer(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-38f, 0f)));
-		buffer(intake, new IntakeAuto.AutoJob(1f)); //Starts up intake
-
-		buffer(lift, new LiftAuto.AutoJob(1f)); //Lifts lift so intake works
-//		buffer(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(13f, 0f))); //Goes back to blocks
+		buffer(foundationGrabber, new FoundationGrabberAuto.AutoJob(false)); //Puts foundation grabber to middle
+		buffer(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-37f, -7f)));
 		execute();
 
+		buffer(intake, new IntakeAuto.AutoJob(1f)); //Starts up intake
+		buffer(lift, new LiftAuto.AutoJob(1f)); //Lifts lift so intake works
+		buffer(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 1f)); //Full power back
+		execute();
 
-		//COLLECTION
-//		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Goes forward to intake
+		wait(0.1f);
+		execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero)); //Sudden stop
 
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Drive forward to collect
 
 		buffer(lift, new LiftAuto.AutoJob(-0.01f)); //Puts lift down
 		buffer(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(23f, 0f))); //Moves back to cross under alliance bridge
 		execute();
 
 		resetRotation();
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -85f))); //Goes to other side and aligns to wall
-//		resetRotation();
+
+		execute(lift, new LiftAuto.AutoJob(0f)); //Stop lift
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 1f)); //Goes to other side and aligns to wall
+		wait(3f);
+
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 0.2f));
+		wait(1f);
+
+		execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0f)); //Stop motors
 
 		if (mode == Mode.POSITION_1_NO_FOUNDATION)
 		{
@@ -186,13 +170,18 @@ public class MainAuto extends AutoOpModeBase
 		buffer(touchSensor, new TouchSensorAuto.AutoJob(TouchSensorAuto.AutoJob.Mode.EXIT_WITH_ONE_TOUCHED)); //...until foundation hit
 		execute();
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0)); //Stops moving
+		execute(grabber, new GrabberAuto.AutoJob(true, false)); //Grabs block
+		execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0f)); //Stops moving
 
 		//GRAB PLATFORM
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(true)); //Grabs platform
+		execute(lift, new LiftAuto.AutoJob(1.0f)); //Raises lift
+
 		wait(0.8f);
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(15f, 5f))); //Moves foundation to building site
+		execute(lift, new LiftAuto.AutoJob(0f)); //Stops lift
+
 		setRotation(90f);
 
 		//RELEASE PLATFORM
@@ -205,8 +194,16 @@ public class MainAuto extends AutoOpModeBase
 		buffer(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -15f))); //Pushes foundation into building zone
 		buffer(foundationGrabber, new FoundationGrabberAuto.AutoJob(true)); //Puts grabbers down so it doesn't hit bridge when parking
 		execute();
-		toggleOuttake(); //Use lift to release the stone
 
+		//Use lift to release the stone
+		execute(grabber, new GrabberAuto.AutoJob(true, true));
+		wait(0.3f);
+		execute(lift, new LiftAuto.AutoJob(-0.2f));
+		wait(0.4f);
+
+		execute(grabber, new GrabberAuto.AutoJob(false, true));
+
+		//Try park
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(5, 0f)));  //Moves robot to avoid bridge when parking
 
 		resetRotation();

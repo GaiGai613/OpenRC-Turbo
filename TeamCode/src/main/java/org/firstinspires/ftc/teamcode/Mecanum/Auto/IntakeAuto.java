@@ -7,33 +7,39 @@ import org.firstinspires.ftc.teamcode.Mecanum.Intake;
 import FTCEngine.Core.Auto.AutoBehavior;
 import FTCEngine.Core.OpModeBase;
 
-public class IntakeAuto extends AutoBehavior<IntakeAuto.AutoJob> {
+public class IntakeAuto extends AutoBehavior<IntakeAuto.AutoJob>
+{
 
 
-    public IntakeAuto(OpModeBase opMode) {
-        super(opMode);
-    }
+	public IntakeAuto(OpModeBase opMode)
+	{
+		super(opMode);
+	}
 
-    @Override
-    public void awake(HardwareMap hardwareMap) {
-        super.awake(hardwareMap);
-        intake = opMode.getBehavior(Intake.class);
-    }
+	@Override
+	public void awake(HardwareMap hardwareMap)
+	{
+		super.awake(hardwareMap);
+		intake = opMode.getBehavior(Intake.class);
+	}
 
-    Intake intake;
+	Intake intake;
 
-    @Override
-    protected void updateJob() {
-        intake.setSpeed(getCurrentJob().speed);
-        getCurrentJob().finishJob();
-    }
+	@Override
+	protected void updateJob()
+	{
+		intake.setSpeed(getCurrentJob().speed);
+		getCurrentJob().finishJob();
+	}
 
-    public static class AutoJob extends FTCEngine.Core.Auto.Job {
+	public static class AutoJob extends FTCEngine.Core.Auto.Job
+	{
 
-        public AutoJob(float speed) {
-            this.speed = speed;
-        }
+		public AutoJob(float speed)
+		{
+			this.speed = speed;
+		}
 
-        public final float speed;
-    }
+		public final float speed;
+	}
 }
