@@ -65,9 +65,9 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 				float angularDelta = Mathf.toSignedAngle(target - currentAngle);
 
 				if (Math.abs(angularDelta) <= 2.5f) angularDelta = 0f;
-				else angularDelta = angularDelta / 50f;
+				else angularDelta = angularDelta / 30f;
 
-				angularDelta = Mathf.normalize(angularDelta) * Mathf.clamp(Math.abs(angularDelta), 0.2f, 1f);
+				angularDelta = Mathf.normalize(angularDelta) * Mathf.clamp(Math.abs(angularDelta), 0.3f, 1f);
 
 				setMotorBehavior(Mathf.almostEquals(angularDelta, 0f) ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT);
 				setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -85,9 +85,9 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 					setMotorBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 				}
 
-				telemetry.addData("Target", target);
-				telemetry.addData("currentAngle", currentAngle);
-				telemetry.addData("angularDelta", angularDelta);
+//				telemetry.addData("Target", target);
+//				telemetry.addData("currentAngle", currentAngle);
+//				telemetry.addData("angularDelta", angularDelta);
 			}
 			else
 			{
@@ -121,10 +121,10 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 //				telemetry.addData("BR", backRight.getTargetPosition());
 //				telemetry.addData("BL", backLeft.getTargetPosition());
 
-					telemetry.addData("FRC", frontRight.getCurrentPosition());
-					telemetry.addData("FLC", frontLeft.getCurrentPosition());
-					telemetry.addData("BRC", backRight.getCurrentPosition());
-					telemetry.addData("BLC", backLeft.getCurrentPosition());
+//					telemetry.addData("FRC", frontRight.getCurrentPosition());
+//					telemetry.addData("FLC", frontLeft.getCurrentPosition());
+//					telemetry.addData("BRC", backRight.getCurrentPosition());
+//					telemetry.addData("BLC", backLeft.getCurrentPosition());
 				}
 			}
 		}
@@ -132,13 +132,18 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 		{
 			Vector2 power = job.getMovement();
 
-			setMotorBehavior(power.equals(Vector2.zero) ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT);
-			setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+			if (power.equals(Vector2.zero)) {
+				setMotorBehavior( DcMotor.ZeroPowerBehavior.BRAKE);
+				setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+			} else {
+				setMotorBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+				setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-			frontRight.setPower(-power.y + power.x);
-			frontLeft.setPower(-power.y - power.x);
-			backRight.setPower(-power.y - power.x);
-			backLeft.setPower(-power.y + power.x);
+				frontRight.setPower(-power.y + power.x);
+				frontLeft.setPower(-power.y - power.x);
+				backRight.setPower(-power.y - power.x);
+				backLeft.setPower(-power.y + power.x);
+			}
 
 			getCurrentJob().finishJob();
 		}

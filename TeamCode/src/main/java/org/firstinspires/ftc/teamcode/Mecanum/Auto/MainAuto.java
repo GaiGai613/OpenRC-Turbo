@@ -124,34 +124,37 @@ public class MainAuto extends AutoOpModeBase
 			return;
 		}
 
-		buffer(foundationGrabber, new FoundationGrabberAuto.AutoJob(false)); //Puts foundation grabber to middle
-		buffer(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-37f, -7f)));
-		execute();
+		if(mode == Mode.RED_POSITION_1_FULL) {
+			setIsBlue(false);
+		}
 
-		buffer(intake, new IntakeAuto.AutoJob(1f)); //Starts up intake
-		buffer(lift, new LiftAuto.AutoJob(1f)); //Lifts lift so intake works
-		buffer(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 1f)); //Full power back
-		execute();
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-38f,0f))); //Goes to blocks
+		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED));//Puts foundation grabber to middle
 
-		wait(0.1f);
-		execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero)); //Sudden stop
+		execute(intake, new IntakeAuto.AutoJob(1f)); //Starts up intake
+		execute(lift, new LiftAuto.AutoJob(1f)); //Lifts lift so intake works
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -4f))); //Full power back drops intake
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Drive forward to collect
 
-		buffer(lift, new LiftAuto.AutoJob(-0.01f)); //Puts lift down
-		buffer(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(23f, 0f))); //Moves back to cross under alliance bridge
-		execute();
+		execute(lift, new LiftAuto.AutoJob(-0.05f)); //Puts lift down
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(17f, 0f))); //Moves back to cross under alliance bridge
 
+		execute(grabber, new GrabberAuto.AutoJob(true, false)); //Grabs block
 		resetRotation();
 
+		if(true) {
+			return;
+		}
 		execute(lift, new LiftAuto.AutoJob(0f)); //Stop lift
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 1f)); //Goes to other side and aligns to wall
-		wait(3f);
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 1f)); //Goes to other side and nearly aligns to wal
+		wait(2f);
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 0.2f));
-		wait(1f);
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 0.2f)); //Low power alignment
+		wait(1.2f);
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0f)); //Stop motors
+		execute(intake, new IntakeAuto.AutoJob(0f));
 
 		if (mode == Mode.POSITION_1_NO_FOUNDATION)
 		{
@@ -166,48 +169,49 @@ public class MainAuto extends AutoOpModeBase
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 15f))); //Goes up to foundation from wall
 
+
+		if(mode == Mode.RED_POSITION_1_FULL) {
+			execute(drivetrain, new DrivetrainAuto.AutoJob(180f));
+		}
+
 		buffer(drivetrain, new DrivetrainAuto.AutoJob(Vector2.left, 0.5f)); //Moves...
 		buffer(touchSensor, new TouchSensorAuto.AutoJob(TouchSensorAuto.AutoJob.Mode.EXIT_WITH_ONE_TOUCHED)); //...until foundation hit
 		execute();
 
-		execute(grabber, new GrabberAuto.AutoJob(true, false)); //Grabs block
 		execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0f)); //Stops moving
 
 		//GRAB PLATFORM
-		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(true)); //Grabs platform
+		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //Grabs platform
 		execute(lift, new LiftAuto.AutoJob(1.0f)); //Raises lift
 
-		wait(0.8f);
+		wait(0.2f);
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(15f, 5f))); //Moves foundation to building site
-		execute(lift, new LiftAuto.AutoJob(0f)); //Stops lift
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(25f, 5f))); //Moves foundation to building site
 
 		setRotation(90f);
 
 		//RELEASE PLATFORM
-		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(false)); //Lets go of foundation
-
-		wait(0.2f);
+		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED)); //Lets go of foundation
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Moves away from foundation to rotate
+
 		setRotation(0f); //Rotates so lift faces foundation
 
-		buffer(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -15f))); //Pushes foundation into building zone
-		buffer(foundationGrabber, new FoundationGrabberAuto.AutoJob(true)); //Puts grabbers down so it doesn't hit bridge when parking
-		execute();
+		execute(grabber, new GrabberAuto.AutoJob(true, true)); //Rotates arm
+		execute(lift, new LiftAuto.AutoJob(0f)); //Stops lift
 
-		//Use lift to release the stone
-		execute(grabber, new GrabberAuto.AutoJob(true, true));
-		wait(0.3f);
-		execute(lift, new LiftAuto.AutoJob(-0.2f));
-		wait(0.4f);
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -15f))); //Pushes foundation into building zone
+		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //Puts grabbers down so it doesn't hit bridge when parking
+		execute(lift, new LiftAuto.AutoJob(-0.05f)); //Lowers lift
 
-		execute(grabber, new GrabberAuto.AutoJob(false, true));
+		execute(lift, new LiftAuto.AutoJob(0f)); //Stops lift
+		execute(grabber, new GrabberAuto.AutoJob(false, true)); //Releases block
+
 
 		//Try park
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(5, 0f)));  //Moves robot to avoid bridge when parking
+//		resetRotation();
 
-		resetRotation();
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 35))); //Moves to park
+//		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(5, 0f)));  //Moves robot to avoid bridge when parking
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(2f, 33))); //Moves to park
 	}
 
 	private enum Mode
@@ -215,7 +219,8 @@ public class MainAuto extends AutoOpModeBase
 		POSITION_1_FULL(0),
 		POSITION_1_NO_FOUNDATION(1),
 		POSITION_1_PARK(2),
-		POSITION_2_PARK(3);
+		POSITION_2_PARK(3),
+		RED_POSITION_1_FULL(4);
 
 		Mode(int value)
 		{

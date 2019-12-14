@@ -22,8 +22,8 @@ public class Grabber extends Behavior
 		rotation = hardwareMap.servo.get("grabberRotation");
 		squeeze = hardwareMap.servo.get("grabberSqueeze");
 
-		rotation.setPosition(0d);
-		squeeze.setPosition(1d);
+		isRotated = !getIsAuto();
+		applyPositions();
 
 		input.registerButton(Input.Source.CONTROLLER_2, Input.Button.RIGHT_BUMPER);
 		input.registerButton(Input.Source.CONTROLLER_2, Input.Button.A);
@@ -47,6 +47,10 @@ public class Grabber extends Behavior
 				isSqueezed = !isSqueezed;
 		}
 
+		applyPositions();
+	}
+
+	private void applyPositions() {
 		rotation.setPosition(isRotated ? 1d : 0d);
 		squeeze.setPosition(isSqueezed ? 0d : 1d);
 	}

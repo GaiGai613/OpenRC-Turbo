@@ -36,7 +36,7 @@ public class GrabberAuto extends AutoBehavior<GrabberAuto.AutoJob> {
     {
         public AutoJob(boolean squeezing, boolean rotating) {
             this.squeezing = squeezing;
-            this.rotating = rotating;
+            this.rotating = !rotating;
         }
 
         private final boolean squeezing;

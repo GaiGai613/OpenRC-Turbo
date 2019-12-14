@@ -17,32 +17,77 @@ public class FoundationGrabber extends TeleOpBehavior  {
         super.awake(hardwareMap);
 
         pullerOne = hardwareMap.servo.get("pullerOne");
-        pullerOne.setPosition(0.5f); // out of way of intake
-
         pullerTwo = hardwareMap.servo.get("pullerTwo");
-        pullerTwo.setPosition(0.5f); // symmetrical
+
+        if (!getIsAuto())
+        {        mode = Mode.RELEASED;
+        applyPositions();}
 
         input.registerButton(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER);
     }
 
     Servo pullerOne;
     Servo pullerTwo;
-    boolean isGrabbing;
+
+    Mode mode;
 
     public void update() {
         super.update();
 
-        if (!getIsAuto() && input.getButtonDown(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER)) isGrabbing = !isGrabbing;
+        if (!getIsAuto() && input.getButtonDown(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER)) {
+            switch (mode) {
+                case GRABBED:
+                case FOLDED: mode = Mode.RELEASED; break;
+                case RELEASED:mode = Mode.GRABBED; break;
+            }
+        }
 
-        pullerOne.setPosition(isGrabbing ? 1.0f : 0.5f);
-        pullerTwo.setPosition(isGrabbing ? 0.95f : 0.5f);
+        applyPositions();
     }
 
-    public boolean isGrabbing() {
-        return isGrabbing;
+    public void applyPositions(){
+        float position1;
+        float position2;
+
+        switch (mode) {
+            case GRABBED:
+
+                position1 = 1f;
+                position2 = 0.95f;
+
+                break;
+            case RELEASED:
+
+                position1 = 0.5f;
+                position2 = 0.5f;
+
+                break;
+            case FOLDED:
+
+                position1 = 0f;
+                position2=  0f;
+
+                break;
+
+            default: return;
+        }
+
+        pullerOne.setPosition(position1);
+        pullerTwo.setPosition(position2);
     }
 
-    public void setGrabbing(boolean grabbing) {
-        isGrabbing = grabbing;
+
+    public Mode getMode() {
+        return mode;
+    }
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
+    }
+
+    public enum Mode {
+        GRABBED,
+        RELEASED,
+        FOLDED
     }
 }
