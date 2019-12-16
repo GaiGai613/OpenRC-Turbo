@@ -52,7 +52,7 @@ public class FoundationGrabber extends TeleOpBehavior  {
         switch (mode) {
             case GRABBED:
 
-                position1 = 1f;
+                position1 = 0f;
                 position2 = 0.95f;
 
                 break;
@@ -64,7 +64,7 @@ public class FoundationGrabber extends TeleOpBehavior  {
                 break;
             case FOLDED:
 
-                position1 = 0f;
+                position1 = .9f;
                 position2=  0f;
 
                 break;

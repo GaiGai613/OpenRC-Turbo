@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Mecanum;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Mecanum.Auto.MainAuto;
+
 import FTCEngine.Core.Behavior;
 import FTCEngine.Core.Input;
 import FTCEngine.Core.OpModeBase;
@@ -22,7 +24,7 @@ public class Grabber extends Behavior
 		rotation = hardwareMap.servo.get("grabberRotation");
 		squeeze = hardwareMap.servo.get("grabberSqueeze");
 
-		isRotated = !getIsAuto();
+		isRotated = MainAuto.flipAtStart;
 		applyPositions();
 
 		input.registerButton(Input.Source.CONTROLLER_2, Input.Button.RIGHT_BUMPER);
@@ -34,7 +36,6 @@ public class Grabber extends Behavior
 
 	private boolean isRotated;
 	private boolean isSqueezed;
-
 	@Override
 	public void update()
 	{

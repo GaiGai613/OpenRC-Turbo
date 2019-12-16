@@ -60,6 +60,8 @@ public class MainAuto extends AutoOpModeBase
 	private FoundationGrabberAuto foundationGrabber;
 	private TouchSensorAuto touchSensor;
 
+	public static boolean flipAtStart;
+
 	private float rotation;
 
 	@Override
@@ -98,18 +100,24 @@ public class MainAuto extends AutoOpModeBase
 	private void simplePark()
 	{
 		wait((float)waitTime);
+		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //out of way of other robot hopefully
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, mode == Mode.POSITION_1_PARK ? -33f : 33f)));
+	}
+
+	private void setRotation(float rotation, float allowedError)
+	{
+		this.rotation = rotation;
+		execute(drivetrain, new DrivetrainAuto.AutoJob(rotation, allowedError));
 	}
 
 	private void setRotation(float rotation)
 	{
-		this.rotation = rotation;
-		execute(drivetrain, new DrivetrainAuto.AutoJob(rotation));
+		setRotation(rotation, 2.5f);
 	}
 
 	private void resetRotation()
 	{
-		execute(drivetrain, new DrivetrainAuto.AutoJob(rotation));
+		execute(drivetrain, new DrivetrainAuto.AutoJob(rotation, 2.5f));
 	}
 
 	@Override
@@ -124,33 +132,44 @@ public class MainAuto extends AutoOpModeBase
 			return;
 		}
 
-		if(mode == Mode.RED_POSITION_1_FULL) {
-			setIsBlue(false);
+		if(mode == Mode.POSITION_1_NO_BLOCKS) {
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-21f, 6f))); // skips blocks and misses parked alliance member
+			resetRotation(); //lines up
+		}
+		else {
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-38f,0f))); //Goes to blocks
+			execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED));//Puts foundation grabber to middle
+
+			execute(intake, new IntakeAuto.AutoJob(1f)); //Starts up intake
+			execute(lift, new LiftAuto.AutoJob(1f)); //Lifts lift so intake works
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -4f))); //Full power back drops intake
+
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Drive forward to collect
+			execute(intake, new IntakeAuto.AutoJob(-1f)); //outtakes a bit
+			wait(0.31f);
+			execute(intake, new IntakeAuto.AutoJob(1f)); //Starts up intake
+
+			execute(lift, new LiftAuto.AutoJob(0f)); //Lets lift down
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(17f, 0f))); //Moves back to cross under alliance bridge
+			execute(lift, new LiftAuto.AutoJob(0.05f)); //Puts lift all thw way down
+			wait(0.1f);
+			execute(lift, new LiftAuto.AutoJob(0f)); //Stop lift
+
+			execute(grabber, new GrabberAuto.AutoJob(true, false)); //Grabs block
+			resetRotation();
 		}
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-38f,0f))); //Goes to blocks
-		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED));//Puts foundation grabber to middle
+		float moveTime = 2f;
 
-		execute(intake, new IntakeAuto.AutoJob(1f)); //Starts up intake
-		execute(lift, new LiftAuto.AutoJob(1f)); //Lifts lift so intake works
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -4f))); //Full power back drops intake
-
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Drive forward to collect
-
-		execute(lift, new LiftAuto.AutoJob(-0.05f)); //Puts lift down
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(17f, 0f))); //Moves back to cross under alliance bridge
-
-		execute(grabber, new GrabberAuto.AutoJob(true, false)); //Grabs block
-		resetRotation();
-
-		if(true) {
-			return;
+		if(!getIsBlue() && mode == Mode.POSITION_1_NO_BLOCKS) {
+			moveTime = 2.5f;
 		}
-		execute(lift, new LiftAuto.AutoJob(0f)); //Stop lift
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 1f)); //Goes to other side and nearly aligns to wal
-		wait(2f);
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 0.2f)); //Low power alignment
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 1f)); //Goes to other side and nearly aligns to wall
+		wait(moveTime);
+
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), .2f)); //Low power alignment
+		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED));//Puts foundation grabber to middle (after b/c doesnt hit wall on red)
 		wait(1.2f);
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0f)); //Stop motors
@@ -167,12 +186,10 @@ public class MainAuto extends AutoOpModeBase
 			return;
 		}
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 15f))); //Goes up to foundation from wall
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 13f))); //Goes up to foundation from wall
 
-
-		if(mode == Mode.RED_POSITION_1_FULL) {
-			execute(drivetrain, new DrivetrainAuto.AutoJob(180f));
-		}
+		if(mode == Mode.POSITION_1_NO_BLOCKS)
+			resetRotation(); //no time for such in full auto
 
 		buffer(drivetrain, new DrivetrainAuto.AutoJob(Vector2.left, 0.5f)); //Moves...
 		buffer(touchSensor, new TouchSensorAuto.AutoJob(TouchSensorAuto.AutoJob.Mode.EXIT_WITH_ONE_TOUCHED)); //...until foundation hit
@@ -182,45 +199,69 @@ public class MainAuto extends AutoOpModeBase
 
 		//GRAB PLATFORM
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //Grabs platform
-		execute(lift, new LiftAuto.AutoJob(1.0f)); //Raises lift
+		if(mode == Mode.POSITION_1_FULL)
+			execute(lift, new LiftAuto.AutoJob(1.0f)); //Raises lift
 
 		wait(0.2f);
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(25f, 5f))); //Moves foundation to building site
 
-		setRotation(90f);
+		setRotation(90f, 5.0f); //Rotates foundation with full power
 
-		//RELEASE PLATFORM
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED)); //Lets go of foundation
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Moves away from foundation to rotate
 
-		setRotation(0f); //Rotates so lift faces foundation
+		if(mode == Mode.POSITION_1_FULL) {
 
-		execute(grabber, new GrabberAuto.AutoJob(true, true)); //Rotates arm
-		execute(lift, new LiftAuto.AutoJob(0f)); //Stops lift
+			//RELEASE PLATFORM
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Moves away from foundation to rotate
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -15f))); //Pushes foundation into building zone
+			setRotation(0f); //Rotates so lift faces foundation
+
+			execute(grabber, new GrabberAuto.AutoJob(true, true)); //Rotates arm
+			flipAtStart = true;
+			execute(lift, new LiftAuto.AutoJob(0f)); //Stops lift
+
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -15f))); //Pushes foundation into building zone
+		}
+		else {
+			setRotation(0f);
+
+			if(getIsBlue()) {
+				execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -5f))); //Pushes foundation into building zone
+			}
+		}
+
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //Puts grabbers down so it doesn't hit bridge when parking
-		execute(lift, new LiftAuto.AutoJob(-0.05f)); //Lowers lift
 
-		execute(lift, new LiftAuto.AutoJob(0f)); //Stops lift
-		execute(grabber, new GrabberAuto.AutoJob(false, true)); //Releases block
-
+		if(mode == Mode.POSITION_1_FULL || mode == Mode.RED_POSITION_1_FULL) {
+			execute(lift, new LiftAuto.AutoJob(-0.05f)); //Lowers lift
+			execute(lift, new LiftAuto.AutoJob(0f)); //Stops lift
+			execute(grabber, new GrabberAuto.AutoJob(false, true)); //Releases block
+		}
 
 		//Try park
 //		resetRotation();
 
 //		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(5, 0f)));  //Moves robot to avoid bridge when parking
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(2f, 33))); //Moves to park
+		float sign = 1f;
+		if(!getIsBlue()) {
+			sign = -1f;
+		}
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(2f * sign, 38f))); //Moves to park
 	}
 
 	private enum Mode
 	{
 		POSITION_1_FULL(0),
-		POSITION_1_NO_FOUNDATION(1),
-		POSITION_1_PARK(2),
-		POSITION_2_PARK(3),
-		RED_POSITION_1_FULL(4);
+		POSITION_1_NO_BLOCKS(1),
+		POSITION_1_NO_FOUNDATION(2),
+		POSITION_1_PARK(3),
+		POSITION_2_PARK(4),
+		RED_POSITION_1_FULL(5),
+		RED_POSITION_1_NO_BLOCKS(6),
+		RED_POSITION_1_NO_FOUNDATION(7),
+		RED_POSITION_1_PARK(8),
+		RED_POSITION_2_PARK(9);
 
 		Mode(int value)
 		{

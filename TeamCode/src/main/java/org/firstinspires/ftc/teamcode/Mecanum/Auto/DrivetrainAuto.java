@@ -64,7 +64,8 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 				float currentAngle = Mathf.toUnsignedAngle(gyroscope.getAngles().y);
 				float angularDelta = Mathf.toSignedAngle(target - currentAngle);
 
-				if (Math.abs(angularDelta) <= 2.5f) angularDelta = 0f;
+				if (Math.abs(angularDelta) <= job.getAllowedError()) angularDelta = 0f;
+//				else if(currentAngle <= target/10) angularDelta = angularDelta/80;
 				else angularDelta = angularDelta / 30f;
 
 				angularDelta = Mathf.normalize(angularDelta) * Mathf.clamp(Math.abs(angularDelta), 0.3f, 1f);
@@ -175,9 +176,10 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 
 	public static class AutoJob extends FTCEngine.Core.Auto.Job
 	{
-		public AutoJob(float angle)
+		public AutoJob(float angle, float allowedError)
 		{
 			setAngle(angle);
+			setAllowedError(allowedError);
 			useEncoders = true;
 		}
 
@@ -195,7 +197,10 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 		}
 
 		private Vector2 movement;
+
 		private float angle;
+		private float allowedError;
+
 		public final boolean useEncoders;
 
 		@Override
@@ -204,7 +209,7 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 			super.reverse();
 
 			setAngle(-getAngle());
-			if (getMovement() != null) setMovement(new Vector2(-getMovement().x, getMovement().y));
+			if (getMovement() != null) setMovement(new Vector2(getMovement().x, -getMovement().y));
 		}
 
 		public Vector2 getMovement()
@@ -222,10 +227,11 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 			return angle;
 		}
 
-		private void setAngle(float angle)
-		{
-			this.angle = angle;
-		}
+		private void setAngle(float angle) { this.angle = angle; }
+
+		public float getAllowedError() {return allowedError;}
+
+		private void setAllowedError(float allowedError) { this.allowedError = allowedError; }
 
 		@Override
 		public String toString()
