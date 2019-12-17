@@ -28,6 +28,8 @@ public class MainAuto extends AutoOpModeBase
 		getInput().registerButton(Input.Source.CONTROLLER_1, Input.Button.B);
 		getInput().registerButton(Input.Source.CONTROLLER_1, Input.Button.X);
 		getInput().registerButton(Input.Source.CONTROLLER_1, Input.Button.Y);
+
+		flipAtStart = false;
 	}
 
 	@Override
@@ -101,7 +103,7 @@ public class MainAuto extends AutoOpModeBase
 	{
 		wait((float)waitTime);
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //out of way of other robot hopefully
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, mode == Mode.POSITION_1_PARK ? -33f : 33f)));
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(mode == Mode.POSITION_1_PARK ? -20f : 0f, mode == Mode.POSITION_1_PARK ? -33f : 33f)));
 	}
 
 	private void setRotation(float rotation, float allowedError)
@@ -137,6 +139,7 @@ public class MainAuto extends AutoOpModeBase
 			resetRotation(); //lines up
 		}
 		else {
+			execute(grabber, new GrabberAuto.AutoJob(false, false)); //Holdes grabber in correct spot
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-38f,0f))); //Goes to blocks
 			execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED));//Puts foundation grabber to middle
 
@@ -146,16 +149,14 @@ public class MainAuto extends AutoOpModeBase
 
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Drive forward to collect
 			execute(intake, new IntakeAuto.AutoJob(-1f)); //outtakes a bit
-			wait(0.31f);
+			wait(0.3f);
 			execute(intake, new IntakeAuto.AutoJob(1f)); //Starts up intake
 
 			execute(lift, new LiftAuto.AutoJob(0f)); //Lets lift down
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(17f, 0f))); //Moves back to cross under alliance bridge
-			execute(lift, new LiftAuto.AutoJob(0.05f)); //Puts lift all thw way down
+			execute(lift, new LiftAuto.AutoJob(-0.05f)); //Puts lift all the way down
 			wait(0.1f);
-			execute(lift, new LiftAuto.AutoJob(0f)); //Stop lift
 
-			execute(grabber, new GrabberAuto.AutoJob(true, false)); //Grabs block
 			resetRotation();
 		}
 
@@ -166,6 +167,8 @@ public class MainAuto extends AutoOpModeBase
 		}
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 1f)); //Goes to other side and nearly aligns to wall
+		execute(lift, new LiftAuto.AutoJob(0.0f)); //Stops lift
+		execute(grabber, new GrabberAuto.AutoJob(true, false)); //Grabs block
 		wait(moveTime);
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), .2f)); //Low power alignment
@@ -233,9 +236,8 @@ public class MainAuto extends AutoOpModeBase
 
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //Puts grabbers down so it doesn't hit bridge when parking
 
-		if(mode == Mode.POSITION_1_FULL || mode == Mode.RED_POSITION_1_FULL) {
-			execute(lift, new LiftAuto.AutoJob(-0.05f)); //Lowers lift
-			execute(lift, new LiftAuto.AutoJob(0f)); //Stops lift
+		if(mode == Mode.POSITION_1_FULL) {
+			execute(lift, new LiftAuto.AutoJob(-0.1f)); //Lowers lift
 			execute(grabber, new GrabberAuto.AutoJob(false, true)); //Releases block
 		}
 
@@ -248,6 +250,7 @@ public class MainAuto extends AutoOpModeBase
 			sign = -1f;
 		}
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(2f * sign, 38f))); //Moves to park
+		execute(lift, new LiftAuto.AutoJob(0.0f));
 	}
 
 	private enum Mode
@@ -256,12 +259,7 @@ public class MainAuto extends AutoOpModeBase
 		POSITION_1_NO_BLOCKS(1),
 		POSITION_1_NO_FOUNDATION(2),
 		POSITION_1_PARK(3),
-		POSITION_2_PARK(4),
-		RED_POSITION_1_FULL(5),
-		RED_POSITION_1_NO_BLOCKS(6),
-		RED_POSITION_1_NO_FOUNDATION(7),
-		RED_POSITION_1_PARK(8),
-		RED_POSITION_2_PARK(9);
+		POSITION_2_PARK(4);
 
 		Mode(int value)
 		{

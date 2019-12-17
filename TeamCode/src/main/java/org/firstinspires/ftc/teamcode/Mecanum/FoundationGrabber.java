@@ -36,9 +36,9 @@ public class FoundationGrabber extends TeleOpBehavior  {
 
         if (!getIsAuto() && input.getButtonDown(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER)) {
             switch (mode) {
-                case GRABBED:
-                case FOLDED: mode = Mode.RELEASED; break;
-                case RELEASED:mode = Mode.GRABBED; break;
+                case GRABBED: mode = Mode.RELEASED; break;
+                case RELEASED: mode = Mode.FOLDED; break;
+                case FOLDED: mode = Mode.GRABBED; break;
             }
         }
 
@@ -52,8 +52,8 @@ public class FoundationGrabber extends TeleOpBehavior  {
         switch (mode) {
             case GRABBED:
 
-                position1 = 0f;
-                position2 = 0.95f;
+                position1 = 0.05f;
+                position2 = 0.90f;
 
                 break;
             case RELEASED:
@@ -64,8 +64,8 @@ public class FoundationGrabber extends TeleOpBehavior  {
                 break;
             case FOLDED:
 
-                position1 = .9f;
-                position2=  0f;
+                position1 = 0.90f;
+                position2=  0.10f;
 
                 break;
 
