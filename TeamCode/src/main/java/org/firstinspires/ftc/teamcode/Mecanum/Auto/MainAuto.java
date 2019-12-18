@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Mecanum.Auto;
+ package org.firstinspires.ftc.teamcode.Mecanum.Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -145,7 +145,7 @@ public class MainAuto extends AutoOpModeBase
 
 			execute(intake, new IntakeAuto.AutoJob(1f)); //Starts up intake
 			execute(lift, new LiftAuto.AutoJob(1f)); //Lifts lift so intake works
-			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -4f))); //Full power back drops intake
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -5f))); //Full power back drops intake
 
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Drive forward to collect
 			execute(intake, new IntakeAuto.AutoJob(-1f)); //outtakes a bit
@@ -237,7 +237,7 @@ public class MainAuto extends AutoOpModeBase
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //Puts grabbers down so it doesn't hit bridge when parking
 
 		if(mode == Mode.POSITION_1_FULL) {
-			execute(lift, new LiftAuto.AutoJob(-0.1f)); //Lowers lift
+			// execute(lift, new LiftAuto.AutoJob(-0.1f)); //Lowers lift
 			execute(grabber, new GrabberAuto.AutoJob(false, true)); //Releases block
 		}
 
