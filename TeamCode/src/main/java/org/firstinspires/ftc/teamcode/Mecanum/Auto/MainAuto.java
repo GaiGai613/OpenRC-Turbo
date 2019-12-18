@@ -28,8 +28,6 @@ public class MainAuto extends AutoOpModeBase
 		getInput().registerButton(Input.Source.CONTROLLER_1, Input.Button.B);
 		getInput().registerButton(Input.Source.CONTROLLER_1, Input.Button.X);
 		getInput().registerButton(Input.Source.CONTROLLER_1, Input.Button.Y);
-
-		flipAtStart = false;
 	}
 
 	@Override
@@ -61,8 +59,6 @@ public class MainAuto extends AutoOpModeBase
 	private LiftAuto lift;
 	private FoundationGrabberAuto foundationGrabber;
 	private TouchSensorAuto touchSensor;
-
-	public static boolean flipAtStart;
 
 	private float rotation;
 
@@ -149,8 +145,12 @@ public class MainAuto extends AutoOpModeBase
 
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Drive forward to collect
 			execute(intake, new IntakeAuto.AutoJob(-1f)); //outtakes a bit
-			wait(0.3f);
+			wait(0.1f);
 			execute(intake, new IntakeAuto.AutoJob(1f)); //Starts up intake
+			wait(0.1f);
+			execute(intake, new IntakeAuto.AutoJob(-1f));
+			wait(0.1f);
+			execute(intake, new IntakeAuto.AutoJob(1f));
 
 			execute(lift, new LiftAuto.AutoJob(0f)); //Lets lift down
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(17f, 0f))); //Moves back to cross under alliance bridge
@@ -207,7 +207,7 @@ public class MainAuto extends AutoOpModeBase
 
 		wait(0.2f);
 
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(25f, 5f))); //Moves foundation to building site
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(25f, 10f))); //Moves foundation to building site
 
 		setRotation(90f, 5.0f); //Rotates foundation with full power
 
@@ -221,8 +221,7 @@ public class MainAuto extends AutoOpModeBase
 			setRotation(0f); //Rotates so lift faces foundation
 
 			execute(grabber, new GrabberAuto.AutoJob(true, true)); //Rotates arm
-			flipAtStart = true;
-			execute(lift, new LiftAuto.AutoJob(0f)); //Stops lift
+			execute(lift, new LiftAuto.AutoJob(0.0f)); //Drops lift down due to gravity
 
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -15f))); //Pushes foundation into building zone
 		}
@@ -237,7 +236,7 @@ public class MainAuto extends AutoOpModeBase
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //Puts grabbers down so it doesn't hit bridge when parking
 
 		if(mode == Mode.POSITION_1_FULL) {
-			// execute(lift, new LiftAuto.AutoJob(-0.1f)); //Lowers lift
+			execute(lift, new LiftAuto.AutoJob(-0.1f)); //Lowers lift down all the way
 			execute(grabber, new GrabberAuto.AutoJob(false, true)); //Releases block
 		}
 

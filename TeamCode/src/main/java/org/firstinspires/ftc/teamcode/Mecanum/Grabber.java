@@ -24,7 +24,9 @@ public class Grabber extends Behavior
 		rotation = hardwareMap.servo.get("grabberRotation");
 		squeeze = hardwareMap.servo.get("grabberSqueeze");
 
-		isRotated = MainAuto.flipAtStart;
+		if(rotation.getPosition() > .5) {
+			isRotated = true;
+		}
 		applyPositions();
 
 		input.registerButton(Input.Source.CONTROLLER_2, Input.Button.RIGHT_BUMPER);
