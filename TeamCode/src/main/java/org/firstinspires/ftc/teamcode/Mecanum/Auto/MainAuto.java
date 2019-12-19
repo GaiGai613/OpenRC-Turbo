@@ -1,4 +1,4 @@
- package org.firstinspires.ftc.teamcode.Mecanum.Auto;
+package org.firstinspires.ftc.teamcode.Mecanum.Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -99,7 +99,9 @@ public class MainAuto extends AutoOpModeBase
 	{
 		wait((float)waitTime);
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //out of way of other robot hopefully
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(mode == Mode.POSITION_1_PARK ? -20f : 0f, mode == Mode.POSITION_1_PARK ? -33f : 33f)));
+
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(mode == Mode.POSITION_1_PARK ? -24f : 0f, 0f)));
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, mode == Mode.POSITION_1_PARK ? -28f : 28f)));
 	}
 
 	private void setRotation(float rotation, float allowedError)
@@ -130,13 +132,15 @@ public class MainAuto extends AutoOpModeBase
 			return;
 		}
 
-		if(mode == Mode.POSITION_1_NO_BLOCKS) {
+		if (mode == Mode.POSITION_1_NO_BLOCKS)
+		{
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-21f, 6f))); // skips blocks and misses parked alliance member
 			resetRotation(); //lines up
 		}
-		else {
-			execute(grabber, new GrabberAuto.AutoJob(false, false)); //Holdes grabber in correct spot
-			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-38f,0f))); //Goes to blocks
+		else
+		{
+			execute(grabber, new GrabberAuto.AutoJob(false, false)); //Holds grabber in correct spot
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-38f, 0f))); //Goes to blocks
 			execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED));//Puts foundation grabber to middle
 
 			execute(intake, new IntakeAuto.AutoJob(1f)); //Starts up intake
@@ -144,26 +148,22 @@ public class MainAuto extends AutoOpModeBase
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -5f))); //Full power back drops intake
 
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Drive forward to collect
-			execute(intake, new IntakeAuto.AutoJob(-1f)); //outtakes a bit
-			wait(0.1f);
-			execute(intake, new IntakeAuto.AutoJob(1f)); //Starts up intake
-			wait(0.1f);
-			execute(intake, new IntakeAuto.AutoJob(-1f));
-			wait(0.1f);
-			execute(intake, new IntakeAuto.AutoJob(1f));
 
-			execute(lift, new LiftAuto.AutoJob(0f)); //Lets lift down
+			for (int i = 0; i < 4; i++)
+			{
+				execute(intake, new IntakeAuto.AutoJob(i % 2 == 0 ? -1 : 1)); //Weird thing that worked
+				wait(0.1f);
+			}
+
+			execute(lift, new LiftAuto.AutoJob(-0.1f)); //Lets lift down
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(17f, 0f))); //Moves back to cross under alliance bridge
-			execute(lift, new LiftAuto.AutoJob(-0.05f)); //Puts lift all the way down
 
 			resetRotation();
 		}
 
-		float moveTime = 2f;
+		float moveTime = 2.1f;
 
-		if(!getIsBlue() && mode == Mode.POSITION_1_NO_BLOCKS) {
-			moveTime = 2.5f;
-		}
+		if (!getIsBlue() && mode == Mode.POSITION_1_NO_BLOCKS) moveTime = 2.3f;
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 1f)); //Goes to other side and nearly aligns to wall
 		execute(lift, new LiftAuto.AutoJob(0.0f)); //Stops lift
@@ -177,21 +177,9 @@ public class MainAuto extends AutoOpModeBase
 		execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0f)); //Stop motors
 		execute(intake, new IntakeAuto.AutoJob(0f));
 
-		if (mode == Mode.POSITION_1_NO_FOUNDATION)
-		{
-			setRotation(180f);
-
-			execute(intake, new IntakeAuto.AutoJob(-1f));
-			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-5f, 50)));
-
-			setRotation(0f);
-			return;
-		}
-
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 13f))); //Goes up to foundation from wall
 
-		if(mode == Mode.POSITION_1_NO_BLOCKS)
-			resetRotation(); //no time for such in full auto
+		if (mode == Mode.POSITION_1_NO_BLOCKS) resetRotation(); //no time for such in full auto
 
 		buffer(drivetrain, new DrivetrainAuto.AutoJob(Vector2.left, 0.5f)); //Moves...
 		buffer(touchSensor, new TouchSensorAuto.AutoJob(TouchSensorAuto.AutoJob.Mode.EXIT_WITH_ONE_TOUCHED)); //...until foundation hit
@@ -201,8 +189,7 @@ public class MainAuto extends AutoOpModeBase
 
 		//GRAB PLATFORM
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //Grabs platform
-		if(mode == Mode.POSITION_1_FULL)
-			execute(lift, new LiftAuto.AutoJob(1.0f)); //Raises lift
+		if (mode == Mode.POSITION_1_FULL) execute(lift, new LiftAuto.AutoJob(1.0f)); //Raises lift
 
 		wait(0.2f);
 
@@ -212,8 +199,8 @@ public class MainAuto extends AutoOpModeBase
 
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED)); //Lets go of foundation
 
-		if(mode == Mode.POSITION_1_FULL) {
-
+		if (mode == Mode.POSITION_1_FULL)
+		{
 			//RELEASE PLATFORM
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Moves away from foundation to rotate
 
@@ -224,17 +211,20 @@ public class MainAuto extends AutoOpModeBase
 
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -15f))); //Pushes foundation into building zone
 		}
-		else {
+		else
+		{
 			setRotation(0f);
 
-			if(getIsBlue()) {
+//			if (getIsBlue())
+//			{
 				execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -5f))); //Pushes foundation into building zone
-			}
+//			}
 		}
 
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //Puts grabbers down so it doesn't hit bridge when parking
 
-		if(mode == Mode.POSITION_1_FULL) {
+		if (mode == Mode.POSITION_1_FULL)
+		{
 			execute(lift, new LiftAuto.AutoJob(-0.1f)); //Lowers lift down all the way
 			execute(grabber, new GrabberAuto.AutoJob(false, true)); //Releases block
 		}
@@ -243,11 +233,8 @@ public class MainAuto extends AutoOpModeBase
 //		resetRotation();
 
 //		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(5, 0f)));  //Moves robot to avoid bridge when parking
-		float sign = 1f;
-		if(!getIsBlue()) {
-			sign = -1f;
-		}
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(2f * sign, 38f))); //Moves to park
+
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(2f, 38f))); //Moves to park
 		execute(lift, new LiftAuto.AutoJob(0.0f));
 	}
 
@@ -255,9 +242,8 @@ public class MainAuto extends AutoOpModeBase
 	{
 		POSITION_1_FULL(0),
 		POSITION_1_NO_BLOCKS(1),
-		POSITION_1_NO_FOUNDATION(2),
-		POSITION_1_PARK(3),
-		POSITION_2_PARK(4);
+		POSITION_1_PARK(2),
+		POSITION_2_PARK(3);
 
 		Mode(int value)
 		{
