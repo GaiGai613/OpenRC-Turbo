@@ -155,7 +155,6 @@ public class MainAuto extends AutoOpModeBase
 			execute(lift, new LiftAuto.AutoJob(0f)); //Lets lift down
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(17f, 0f))); //Moves back to cross under alliance bridge
 			execute(lift, new LiftAuto.AutoJob(-0.05f)); //Puts lift all the way down
-			wait(0.1f);
 
 			resetRotation();
 		}
