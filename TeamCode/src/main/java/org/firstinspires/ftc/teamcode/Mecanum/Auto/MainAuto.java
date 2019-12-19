@@ -159,7 +159,7 @@ public class MainAuto extends AutoOpModeBase
 			resetRotation();
 		}
 
-		float moveTime = 2f;
+		float moveTime = 2.1f;
 
 		if(!getIsBlue() && mode == Mode.POSITION_1_NO_BLOCKS) {
 			moveTime = 2.5f;
@@ -245,7 +245,7 @@ public class MainAuto extends AutoOpModeBase
 //		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(5, 0f)));  //Moves robot to avoid bridge when parking
 		float sign = 1f;
 		if(!getIsBlue()) {
-			sign = -1f;
+			sign = -2f;
 		}
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(2f * sign, 38f))); //Moves to park
 		execute(lift, new LiftAuto.AutoJob(0.0f));
