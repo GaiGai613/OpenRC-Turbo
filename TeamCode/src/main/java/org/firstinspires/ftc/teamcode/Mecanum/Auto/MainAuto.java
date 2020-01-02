@@ -219,6 +219,8 @@ public class MainAuto extends AutoOpModeBase
 //			{
 				execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -5f))); //Pushes foundation into building zone
 //			}
+
+			setRotation(0f);
 		}
 
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //Puts grabbers down so it doesn't hit bridge when parking
