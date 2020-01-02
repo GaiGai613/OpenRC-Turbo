@@ -7,86 +7,104 @@ import FTCEngine.Core.Input;
 import FTCEngine.Core.OpModeBase;
 import FTCEngine.Core.TeleOp.TeleOpBehavior;
 
-public class FoundationGrabber extends TeleOpBehavior  {
+public class FoundationGrabber extends TeleOpBehavior
+{
 
-    public FoundationGrabber(OpModeBase opMode) {
-        super(opMode);
-    }
+	public FoundationGrabber(OpModeBase opMode)
+	{
+		super(opMode);
+	}
 
-    public void awake(HardwareMap hardwareMap) {
-        super.awake(hardwareMap);
+	public void awake(HardwareMap hardwareMap)
+	{
+		super.awake(hardwareMap);
 
-        pullerOne = hardwareMap.servo.get("pullerOne");
-        pullerTwo = hardwareMap.servo.get("pullerTwo");
+		pullerOne = hardwareMap.servo.get("pullerOne");
+		pullerTwo = hardwareMap.servo.get("pullerTwo");
 
-        mode = Mode.GRABBED;
-        applyPositions();
+		mode = Mode.GRABBED;
+		applyPositions();
 
-        input.registerButton(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER);
-    }
+		input.registerButton(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER); ;
+		input.registerButton(Input.Source.CONTROLLER_2, Input.Button.LEFT_BUMPER);
+	}
 
-    Servo pullerOne;
-    Servo pullerTwo;
+	Servo pullerOne;
+	Servo pullerTwo;
 
-    Mode mode;
+	Mode mode;
 
-    public void update() {
-        super.update();
+	public void update()
+	{
+		super.update();
 
-        if (!getIsAuto() && input.getButtonDown(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER)) {
-            switch (mode) {
-                case GRABBED: mode = Mode.RELEASED; break;
-                case RELEASED: mode = Mode.FOLDED; break;
-                case FOLDED: mode = Mode.GRABBED; break;
-            }
-        }
+		if (!getIsAuto() && (input.getButtonDown(Input.Source.CONTROLLER_2, Input.Button.LEFT_BUMPER) || input.getButtonDown(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER)))
+		{
+			switch (mode)
+			{
+//				case GRABBED: mode = Mode.RELEASED; break;
+//				case RELEASED: mode = Mode.FOLDED; break;
+//				case FOLDED: mode = Mode.GRABBED; break;
 
-        applyPositions();
-    }
+				case GRABBED: mode = Mode.RELEASED; break;
+				case RELEASED:
+				case FOLDED: mode = Mode.GRABBED; break;
+			}
+		}
 
-    public void applyPositions(){
-        float position1;
-        float position2;
+		applyPositions();
+	}
 
-        switch (mode) {
-            case GRABBED:
+	public void applyPositions()
+	{
+		float position1;
+		float position2;
 
-                position1 = 0.05f;
-                position2 = 0.90f;
+		switch (mode)
+		{
+			case GRABBED:
 
-                break;
-            case RELEASED:
+				position1 = 0.9f;
+				position2 = 0.9f;
 
-                position1 = 0.5f;
-                position2 = 0.5f;
+				break;
 
-                break;
-            case FOLDED:
+			case RELEASED:
 
-                position1 = 0.90f;
-                position2=  0.10f;
+				position1 = 0.5f;
+				position2 = 0.5f;
 
-                break;
+				break;
 
-            default: return;
-        }
+			case FOLDED:
 
-        pullerOne.setPosition(position1);
-        pullerTwo.setPosition(position2);
-    }
+				position1 = 0.1f;
+				position2 = 0.1f;
+
+				break;
+
+			default: return;
+		}
+
+		pullerOne.setPosition(position1);
+		pullerTwo.setPosition(position2);
+	}
 
 
-    public Mode getMode() {
-        return mode;
-    }
+	public Mode getMode()
+	{
+		return mode;
+	}
 
-    public void setMode(Mode mode) {
-        this.mode = mode;
-    }
+	public void setMode(Mode mode)
+	{
+		this.mode = mode;
+	}
 
-    public enum Mode {
-        GRABBED,
-        RELEASED,
-        FOLDED
-    }
+	public enum Mode
+	{
+		GRABBED,
+		RELEASED,
+		FOLDED
+	}
 }

@@ -139,29 +139,31 @@ public class MainAuto extends AutoOpModeBase
 		}
 		else
 		{
-			execute(grabber, new GrabberAuto.AutoJob(false, false)); //Holds grabber in correct spot
+			buffer(grabber, new GrabberAuto.AutoJob(false, false)); //Holds grabber in correct spot
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-38f, 0f))); //Goes to blocks
 			execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED));//Puts foundation grabber to middle
 
-			execute(intake, new IntakeAuto.AutoJob(1f)); //Starts up intake
-			execute(lift, new LiftAuto.AutoJob(1f)); //Lifts lift so intake works
+			buffer(intake, new IntakeAuto.AutoJob(1f)); //Starts up intake
+			buffer(lift, new LiftAuto.AutoJob(1f)); //Lifts lift so intake works
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -5f))); //Full power back drops intake
 
+			buffer(lift, new LiftAuto.AutoJob(0f)); //Stops lift
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Drive forward to collect
 
-			for (int i = 0; i < 4; i++)
-			{
-				execute(intake, new IntakeAuto.AutoJob(i % 2 == 0 ? -1 : 1)); //Weird thing that worked
-				wait(0.1f);
-			}
+//			for (int i = 0; i < 4; i++)
+//			{
+//				execute(intake, new IntakeAuto.AutoJob(i % 2 == 0 ? -1 : 1)); //Weird thing that worked
+//				wait(0.1f);
+//			}
 
-			execute(lift, new LiftAuto.AutoJob(-0.1f)); //Lets lift down
+			buffer(grabber, new GrabberAuto.AutoJob(false, false));
+			buffer(lift, new LiftAuto.AutoJob(-0.05f)); //Lets lift down
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(17f, 0f))); //Moves back to cross under alliance bridge
 
 			resetRotation();
 		}
 
-		float moveTime = 2.1f;
+		float moveTime = 1.9f;
 
 		if (!getIsBlue() && mode == Mode.POSITION_1_NO_BLOCKS) moveTime = 2.3f;
 
@@ -217,7 +219,7 @@ public class MainAuto extends AutoOpModeBase
 
 //			if (getIsBlue())
 //			{
-				execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -5f))); //Pushes foundation into building zone
+				execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -10f))); //Pushes foundation into building zone (Value was -5)
 //			}
 
 			setRotation(0f);
