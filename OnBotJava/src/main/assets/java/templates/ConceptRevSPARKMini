@@ -80,7 +80,7 @@ public class ConceptRevSPARKMini extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            // Setup a variable for each drive wheel to save power level for telemetry
+            // Setup a variable for each drive wheel to save angularPower level for telemetry
             double leftPower;
             double rightPower;
 
@@ -99,11 +99,11 @@ public class ConceptRevSPARKMini extends LinearOpMode {
             // leftPower  = -gamepad1.left_stick_y ;
             // rightPower = -gamepad1.right_stick_y ;
 
-            // Send calculated power to wheels
+            // Send calculated angularPower to wheels
             leftDrive.setPower(leftPower);
             rightDrive.setPower(rightPower);
 
-            // Show the elapsed game time and wheel power.
+            // Show the elapsed game time and wheel angularPower.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
             telemetry.update();

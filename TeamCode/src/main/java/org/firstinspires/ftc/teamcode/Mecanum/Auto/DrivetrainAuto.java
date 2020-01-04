@@ -65,10 +65,9 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 				float angularDelta = Mathf.toSignedAngle(target - currentAngle);
 
 				if (Math.abs(angularDelta) <= job.getAllowedError()) angularDelta = 0f;
-//				else if(currentAngle <= target/10) angularDelta = angularDelta/80;
 				else angularDelta = angularDelta / 30f;
 
-				angularDelta = Mathf.normalize(angularDelta) * Mathf.clamp(Math.abs(angularDelta), 0.3f, 1f);
+				angularDelta = Mathf.normalize(angularDelta) * Mathf.clamp(Math.abs(angularDelta), 0.3f, job.getAngularPower());
 
 				setMotorBehavior(Mathf.almostEquals(angularDelta, 0f) ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT);
 				setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -133,10 +132,13 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 		{
 			Vector2 power = job.getMovement();
 
-			if (power.equals(Vector2.zero)) {
-				setMotorBehavior( DcMotor.ZeroPowerBehavior.BRAKE);
+			if (power.equals(Vector2.zero))
+			{
+				setMotorBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 				setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-			} else {
+			}
+			else
+			{
 				setMotorBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 				setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -180,12 +182,21 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 		{
 			setAngle(angle);
 			setAllowedError(allowedError);
+			setAngularPower(1f);
+			useEncoders = true;
+		}
+
+		public AutoJob(float angle, float allowedError, float power)
+		{
+			setAngle(angle);
+			setAllowedError(allowedError);
+			setAngularPower(power);
 			useEncoders = true;
 		}
 
 		public AutoJob(Vector2 movement)
 		{
-			setAngle(0);
+			setAngle(0f);
 			setMovement(movement);
 			useEncoders = true;
 		}
@@ -200,6 +211,7 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 
 		private float angle;
 		private float allowedError;
+		private float angularPower;
 
 		public final boolean useEncoders;
 
@@ -233,12 +245,24 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 
 		private void setAllowedError(float allowedError) { this.allowedError = allowedError; }
 
+		public float getAngularPower()
+		{
+			return angularPower;
+		}
+
+		private void setAngularPower(float angularPower)
+		{
+			this.angularPower = angularPower;
+		}
+
 		@Override
 		public String toString()
 		{
 			return "AutoJob{" +
 			       "movement=" + movement +
 			       ", angle=" + angle +
+			       ", allowedError=" + allowedError +
+			       ", angularPower=" + angularPower +
 			       ", useEncoders=" + useEncoders +
 			       '}';
 		}

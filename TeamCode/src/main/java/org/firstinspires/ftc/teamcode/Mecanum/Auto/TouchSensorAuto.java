@@ -28,18 +28,18 @@ public class TouchSensorAuto extends AutoBehavior<TouchSensorAuto.AutoJob> {
     protected void updateJob() {
 
         boolean finish = false;
+        final float THRESHOLD = 0.8f;
 
         switch (getCurrentJob().mode) {
 
             case EXIT_WITH_ONE_TOUCHED:
 
-                if (front.getValue() >= 0.9f || back.getValue() >= 0.9f) finish = true;
-
+                if (front.getValue() >= THRESHOLD || back.getValue() >= THRESHOLD) finish = true;
                 break;
+
             case EXIT_WITH_BOTH_TOUCHED:
 
-                if (front.getValue() >= 0.9f && back.getValue() >= 0.9f) finish = true;
-
+                if (front.getValue() >= THRESHOLD && back.getValue() >= THRESHOLD) finish = true;
                 break;
         }
 

@@ -49,7 +49,7 @@ import com.qualcomm.robotcore.util.Range;
  *   otherwise you would use: PushbotAutoDriveByEncoder;
  *
  *  This code requires that the drive Motors have been configured such that a positive
- *  power command moves them forward, and causes the encoders to count UP.
+ *  angularPower command moves them forward, and causes the encoders to count UP.
  *
  *  This code uses the RUN_TO_POSITION mode to enable the Motor controllers to generate the run profile
  *
@@ -306,7 +306,7 @@ public class PushbotAutoDriveByGyro_Linear extends LinearOpMode {
         double leftSpeed;
         double rightSpeed;
 
-        // determine turn power based on +/- error
+        // determine turn angularPower based on +/- error
         error = getError(angle);
 
         if (Math.abs(error) <= HEADING_THRESHOLD) {
