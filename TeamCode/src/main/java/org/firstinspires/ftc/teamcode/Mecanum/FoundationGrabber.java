@@ -22,10 +22,10 @@ public class FoundationGrabber extends TeleOpBehavior
 		pullerOne = hardwareMap.servo.get("pullerOne");
 		pullerTwo = hardwareMap.servo.get("pullerTwo");
 
-		mode = Mode.GRABBED;
+		mode = Mode.FOLDED;
 		applyPositions();
 
-		input.registerButton(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER); ;
+		input.registerButton(Input.Source.CONTROLLER_1, Input.Button.RIGHT_BUMPER);
 		input.registerButton(Input.Source.CONTROLLER_2, Input.Button.LEFT_BUMPER);
 	}
 

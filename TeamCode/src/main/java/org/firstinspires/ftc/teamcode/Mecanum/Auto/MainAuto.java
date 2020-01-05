@@ -129,7 +129,31 @@ public class MainAuto extends AutoOpModeBase
 	protected void queueJobs()
 	{
 		setup();
+		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED));
+
 //		tuneDrivetrain();
+
+		if (mode == Mode.POSITION_2_SPECIAL)
+		{
+			wait((float)waitTime);
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -10f)));
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 8f)));
+
+			resetRotation();
+
+			execute(lift, new LiftAuto.AutoJob(1f)); //Raises lift so other intake drops
+			wait(2f);
+
+			execute(grabber,new GrabberAuto.AutoJob(false, true));
+			wait(2f);
+
+			execute(lift, new LiftAuto.AutoJob(-0.1f));
+			wait(2f);
+
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 24f)));
+
+			return;
+		}
 
 		if (mode == Mode.POSITION_1_PARK || mode == Mode.POSITION_2_PARK)
 		{
@@ -171,6 +195,7 @@ public class MainAuto extends AutoOpModeBase
 		}
 
 		execute(grabber, new GrabberAuto.AutoJob(true, false)); //Grabs block
+		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED));
 
 		buffer(lift, new LiftAuto.AutoJob(-0.3f)); //Lets lift down
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 1f)); //Goes to other side and nearly aligns to wall
@@ -260,7 +285,8 @@ public class MainAuto extends AutoOpModeBase
 		POSITION_1_FULL(0),
 		POSITION_1_NO_BLOCKS(1),
 		POSITION_1_PARK(2),
-		POSITION_2_PARK(3);
+		POSITION_2_PARK(3),
+		POSITION_2_SPECIAL(4);
 
 		Mode(int value)
 		{
