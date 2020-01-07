@@ -221,7 +221,7 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 			super.reverse();
 
 			setAngle(-getAngle());
-			if (getMovement() != null) setMovement(new Vector2(getMovement().x, -getMovement().y));
+			if (getMovement() != null) setMovement(new Vector2(-getMovement().x, getMovement().y));
 		}
 
 		public Vector2 getMovement()
