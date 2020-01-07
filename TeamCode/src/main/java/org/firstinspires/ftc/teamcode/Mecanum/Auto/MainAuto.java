@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Mecanum.Auto;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.teamcode.Mecanum.Camera;
 import org.firstinspires.ftc.teamcode.Mecanum.FoundationGrabber;
 import org.firstinspires.ftc.teamcode.Mecanum.Grabber;
 import org.firstinspires.ftc.teamcode.Mecanum.Intake;
@@ -34,6 +35,7 @@ public class MainAuto extends AutoOpModeBase
 	public void addBehaviors(List<Behavior> behaviorList)
 	{
 		behaviorList.add(new Gyroscope(this));
+		behaviorList.add(new Camera(this));
 		behaviorList.add(new DrivetrainAuto(this));
 		behaviorList.add(new TouchSensorAuto(this));
 		behaviorList.add(new LiftAuto(this));
@@ -207,7 +209,7 @@ public class MainAuto extends AutoOpModeBase
 		wait(getIsBlue() ? 1f : 3f);
 
 		buffer(lift, new LiftAuto.AutoJob(0f)); //Stops lift
-		buffer(intake, new IntakeAuto.AutoJob(0f)); //Stops intake
+		buffer(intake, new IntakeAuto.AutoJob(-1f)); //Stops intake
 		execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0f)); //Stop motors
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, getIsBlue() ? 15f : 13f))); //Goes up to foundation from wall
