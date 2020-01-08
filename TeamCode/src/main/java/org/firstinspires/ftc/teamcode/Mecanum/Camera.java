@@ -18,11 +18,25 @@ public class Camera extends Behavior {
     }
 
     Vision vision;
+    VisionPipeline.Position position;
 
     @Override
     public void awake(HardwareMap hardwareMap) {
         super.awake(hardwareMap);
+
         if (getIsAuto()) vision = new Vision(hardwareMap);
+    }
+
+    @Override
+    public void start() {
+        super.start();
+        if (vision == null) return;
+
+//        position = vision.getPosition();
+//        printPosition();
+
+//        vision.destroy();
+//        vision = null;
     }
 
     public VisionPipeline.Position getPosition() {

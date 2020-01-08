@@ -48,8 +48,6 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 	private final float INCH_2_TICK_NORMAL = 63.8571428571f;
 	private final float INCH_2_TICK_STRAFE = 74.5f;
 
-	private final float DEGREE_2_TICK = 10.0f;
-
 	@Override
 	protected void updateJob()
 	{
@@ -64,30 +62,31 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 				float currentAngle = Mathf.toUnsignedAngle(gyroscope.getAngles().y);
 				float angularDelta = Mathf.toSignedAngle(target - currentAngle);
 
-				if (Math.abs(angularDelta) <= job.getAllowedError()) angularDelta = 0f;
-				else angularDelta = angularDelta / 30f;
+				if (Math.abs(angularDelta) <= job.getAllowedError()) {
 
-				angularDelta = Mathf.normalize(angularDelta) * Mathf.clamp(Math.abs(angularDelta), 0.3f, job.getAngularPower());
-
-				setMotorBehavior(Mathf.almostEquals(angularDelta, 0f) ? DcMotor.ZeroPowerBehavior.BRAKE : DcMotor.ZeroPowerBehavior.FLOAT);
-				setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-				frontRight.setPower(angularDelta);
-				frontLeft.setPower(-angularDelta);
-				backRight.setPower(angularDelta);
-				backLeft.setPower(-angularDelta);
-
-				if (Mathf.almostEquals(angularDelta, 0f))
-				{
 					job.finishJob();
+					setMotorPower(0f);
 
 					setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 					setMotorBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+					return;
 				}
 
-//				telemetry.addData("Target", target);
-//				telemetry.addData("currentAngle", currentAngle);
-//				telemetry.addData("angularDelta", angularDelta);
+				float power = Mathf.normalize(angularDelta) * Mathf.clamp(Math.abs(angularDelta/45f), 0.2f, job.getAngularPower());
+
+				setMotorBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+				setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+				frontRight.setPower(power);
+				frontLeft.setPower(-power);
+				backRight.setPower(power);
+				backLeft.setPower(-power);
+
+				telemetry.addData("target", target);
+				telemetry.addData("currentAngle", currentAngle);
+				telemetry.addData("angularDelta", angularDelta);
+				telemetry.addData("power", power);
 			}
 			else
 			{
@@ -100,7 +99,6 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 				frontRight.setTargetPosition(xAmount - yAmount);
 				backLeft.setTargetPosition(xAmount - yAmount);
 				backRight.setTargetPosition(-xAmount - yAmount);
-
 
 				setMotorPower(1f);
 				setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
