@@ -139,13 +139,13 @@ public class MainAuto extends AutoOpModeBase
 
 			setRotation(180f, 7f); //Rotate so touch sensors face platform red
 
-			startOverrideReverse();
+//			startOverrideReverse();
 
 			buffer(drivetrain, new DrivetrainAuto.AutoJob(Vector2.left, 0.5f)); //Moves...
 			buffer(touchSensor, new TouchSensorAuto.AutoJob(TouchSensorAuto.AutoJob.Mode.EXIT_WITH_ONE_TOUCHED)); //...until foundation hit
 			execute();
 
-			endOverrideReverse();
+//			endOverrideReverse();
 
 			execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0f)); //Stops moving
 
@@ -153,10 +153,9 @@ public class MainAuto extends AutoOpModeBase
 //			execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //Grabs platform
 //			execute(lift, new LiftAuto.AutoJob(1.0f)); //Raises lift
 
-			wait(.55f);
+//			wait(0.5f);
 
-			//execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(30f, 0f))); //Moves foundation to building site
-
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-30f, 0f))); //Moves foundation to building site
 			return;
 		}
 
@@ -237,7 +236,7 @@ public class MainAuto extends AutoOpModeBase
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 15f))); //Goes up to foundation from wall
 
 		if (mode == Mode.POSITION_1_FULL) resetRotation(); //no time for such in full auto
-		/*if (mode == Mode.POSITION_1_FULL && !getIsBlue())*/ setRotation(180f, 5f); //Rotate so touch sensors face platform red
+		if (mode == Mode.POSITION_1_FULL && !getIsBlue()) setRotation(180f, 5f); //Rotate so touch sensors face platform red
 
 		startOverrideReverse();
 

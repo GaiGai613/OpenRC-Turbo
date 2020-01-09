@@ -42,6 +42,9 @@ public class Camera extends Behavior {
     public VisionPipeline.Position getPosition() {
         return vision.getPosition();
     }
+//    public VisionPipeline.Position getPosition() {
+//        return VisionPipeline.Position.UNKNOWN;
+//    }
 
     @Override
     public void stop() {

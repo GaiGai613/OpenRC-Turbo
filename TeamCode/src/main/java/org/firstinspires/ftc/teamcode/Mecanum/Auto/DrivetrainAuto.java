@@ -114,15 +114,15 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 				}
 				else
 				{
-//				telemetry.addData("FR", frontRight.getTargetPosition());
-//				telemetry.addData("FL", frontLeft.getTargetPosition());
-//				telemetry.addData("BR", backRight.getTargetPosition());
-//				telemetry.addData("BL", backLeft.getTargetPosition());
+					telemetry.addData("FR", frontRight.getTargetPosition());
+					telemetry.addData("FL", frontLeft.getTargetPosition());
+					telemetry.addData("BR", backRight.getTargetPosition());
+					telemetry.addData("BL", backLeft.getTargetPosition());
 
-//					telemetry.addData("FRC", frontRight.getCurrentPosition());
-//					telemetry.addData("FLC", frontLeft.getCurrentPosition());
-//					telemetry.addData("BRC", backRight.getCurrentPosition());
-//					telemetry.addData("BLC", backLeft.getCurrentPosition());
+					telemetry.addData("FRC", frontRight.getCurrentPosition());
+					telemetry.addData("FLC", frontLeft.getCurrentPosition());
+					telemetry.addData("BRC", backRight.getCurrentPosition());
+					telemetry.addData("BLC", backLeft.getCurrentPosition());
 				}
 			}
 		}
@@ -218,8 +218,8 @@ public class DrivetrainAuto extends AutoBehavior<DrivetrainAuto.AutoJob>
 		{
 			super.reverse();
 
-			setAngle(-getAngle());
-			if (getMovement() != null) setMovement(new Vector2(-getMovement().x, getMovement().y));
+//			setAngle(-getAngle());
+//			if (getMovement() != null) setMovement(new Vector2(-getMovement().x, getMovement().y));
 		}
 
 		public Vector2 getMovement()

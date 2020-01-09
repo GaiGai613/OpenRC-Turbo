@@ -109,4 +109,13 @@ public class Drivetrain extends TeleOpBehavior
 		backRight.setZeroPowerBehavior(behavior);
 		backLeft.setZeroPowerBehavior(behavior);
 	}
+
+	private void setMotorMode(DcMotor.RunMode mode)
+	{
+		frontRight.setMode(mode);
+		frontLeft.setMode(mode);
+		backRight.setMode(mode);
+		backLeft.setMode(mode);
+	}
+
 }
