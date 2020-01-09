@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Mecanum.Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Mecanum.Camera;
 import org.firstinspires.ftc.teamcode.Mecanum.FoundationGrabber;
@@ -9,7 +8,6 @@ import org.firstinspires.ftc.teamcode.Mecanum.Grabber;
 import org.firstinspires.ftc.teamcode.Mecanum.Intake;
 
 import org.firstinspires.ftc.teamcode.Mecanum.Gyroscope;
-import org.firstinspires.ftc.teamcode.Mecanum.Lift;
 
 import java.util.List;
 
@@ -18,7 +16,6 @@ import FTCEngine.Core.Behavior;
 import FTCEngine.Core.Input;
 import FTCEngine.Math.Mathf;
 import FTCEngine.Math.Vector2;
-import FTCEngine.VisionPipeline;
 
 @Autonomous(name = "MainAuto")
 public class MainAuto extends AutoOpModeBase
@@ -79,8 +76,6 @@ public class MainAuto extends AutoOpModeBase
 
 		telemetry.addData("Mode (B)", mode);
 		telemetry.addData("Wait time (X/Y)", waitTime);
-
-		telemetry.addData("Stone Position: ", getBehavior(Camera.class).getPosition());
 	}
 
 	private void setup()
@@ -134,41 +129,44 @@ public class MainAuto extends AutoOpModeBase
 	protected void queueJobs()
 	{
 		setup();
+		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED));
 
-		if (true) {
+//		tuneDrivetrain();
 
-			setRotation(180f, 7f); //Rotate so touch sensors face platform red
+		if (mode == Mode.POSITION_2_FOUNDATION)
+		{
+			wait((float)waitTime);
+			execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED)); //Puts grabbers up
 
-//			startOverrideReverse();
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0, 20))); //Aligns with foundation center
 
 			buffer(drivetrain, new DrivetrainAuto.AutoJob(Vector2.left, 0.5f)); //Moves...
 			buffer(touchSensor, new TouchSensorAuto.AutoJob(TouchSensorAuto.AutoJob.Mode.EXIT_WITH_ONE_TOUCHED)); //...until foundation hit
 			execute();
 
-//			endOverrideReverse();
-
 			execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0f)); //Stops moving
 
 			//GRAB PLATFORM
-//			execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //Grabs platform
-//			execute(lift, new LiftAuto.AutoJob(1.0f)); //Raises lift
+			execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED)); //Grabs platform
 
-//			wait(0.5f);
+			wait(0.35f);
 
-			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-30f, 0f))); //Moves foundation to building site
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(20, 0))); //Moves foundation to building site
+			setRotation(-90f, 5f, .3f);
+
+			execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.FOLDED)); //Releases platform
+
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0, -35))); //Moves to park
 			return;
 		}
-
-		if (getIsBlue() || mode != Mode.POSITION_1_FULL) execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED));
-		VisionPipeline.Position skystonePosition = getBehavior(Camera.class).getPosition();
-
-//		tuneDrivetrain();
 
 		if (mode == Mode.POSITION_1_PARK || mode == Mode.POSITION_2_PARK)
 		{
 			simplePark();
 			return;
 		}
+
+		if (!getIsBlue() && mode == Mode.POSITION_1_FULL) mode = Mode.POSITION_1_NO_BLOCKS;
 
 		if (mode == Mode.POSITION_1_NO_BLOCKS)
 		{
@@ -177,19 +175,9 @@ public class MainAuto extends AutoOpModeBase
 		}
 		else
 		{
-			float yDistance;
-
-			if (getIsBlue()) yDistance = 0f;
-			else  yDistance = skystonePosition == VisionPipeline.Position.CENTER ? 6f : (skystonePosition == VisionPipeline.Position.LEFT ? -10f : 2f);
-
-			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f,yDistance)));
-
-			buffer(intake, new IntakeAuto.AutoJob(-1f)); //Starts up intake
 			buffer(grabber, new GrabberAuto.AutoJob(false, false)); //Holds grabber in correct spot
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-38f, 0f))); //Goes to blocks
 			execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED));//Puts foundation grabber to middle
-
-			execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.GRABBED));
 
 			buffer(intake, new IntakeAuto.AutoJob(1f)); //Starts up intake
 			buffer(lift, new LiftAuto.AutoJob(1f)); //Lifts lift so intake works
@@ -198,10 +186,11 @@ public class MainAuto extends AutoOpModeBase
 			buffer(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Drive forward to collect
 			execute(lift, new LiftAuto.AutoJob(0f)); //Stops lift
 
-			for (int i = 0; i < 4; i++) {
-				execute(intake, new IntakeAuto.AutoJob(i % 2 == 0 ? -1 : 1));
-				wait(0.1f);
-			}
+//			for (int i = 0; i < 4; i++)
+//			{
+//				execute(intake, new IntakeAuto.AutoJob(i % 2 == 0 ? -1f : 1f)); //Weird thing that worked
+//				wait(0.1f);
+//			}
 
 			buffer(grabber, new GrabberAuto.AutoJob(false, false));
 			buffer(lift, new LiftAuto.AutoJob(-0.1f)); //Lets lift down
@@ -216,35 +205,23 @@ public class MainAuto extends AutoOpModeBase
 		buffer(lift, new LiftAuto.AutoJob(-0.3f)); //Lets lift down
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 1f)); //Goes to other side and nearly aligns to wall
 
-		float time;
-
-		if (getIsBlue())  time = 1.97f;
-		else time = skystonePosition == VisionPipeline.Position.CENTER ? 2.3f : (skystonePosition == VisionPipeline.Position.LEFT ? 1.9f : 2.1f);
-
-		wait(time);
+		wait(getIsBlue() ? 1.97f : 1.5f);
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 0.3f)); //Low power alignment
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED)); //Puts foundation grabber to middle (after b/c doesnt hit wall on red)
-
-		wait(1f);
+		wait(getIsBlue() ? 1f : 3f);
 
 		buffer(lift, new LiftAuto.AutoJob(0f)); //Stops lift
 		buffer(intake, new IntakeAuto.AutoJob(-1f)); //Stops intake
 		execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0f)); //Stop motors
 
-//		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, getIsBlue() ? 15f : 13f))); //Goes up to foundation from wall
-		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 15f))); //Goes up to foundation from wall
+		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, getIsBlue() ? 15f : 13f))); //Goes up to foundation from wall
 
 		if (mode == Mode.POSITION_1_FULL) resetRotation(); //no time for such in full auto
-		if (mode == Mode.POSITION_1_FULL && !getIsBlue()) setRotation(180f, 5f); //Rotate so touch sensors face platform red
-
-		startOverrideReverse();
 
 		buffer(drivetrain, new DrivetrainAuto.AutoJob(Vector2.left, 0.5f)); //Moves...
 		buffer(touchSensor, new TouchSensorAuto.AutoJob(TouchSensorAuto.AutoJob.Mode.EXIT_WITH_ONE_TOUCHED)); //...until foundation hit
 		execute();
-
-		endOverrideReverse();
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0f)); //Stops moving
 
@@ -256,9 +233,8 @@ public class MainAuto extends AutoOpModeBase
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(28f, 10f))); //Moves foundation to building site
 
-//		if (getIsBlue()) setRotation(90f, 5.0f); //Rotates foundation with full power
-//		else setRotation(90f, 2f, 0.3f); //Rotates foundation with half power
-		setRotation(90f, 5.0f);
+		if (getIsBlue()) setRotation(90f, 5.0f); //Rotates foundation with full power
+		else setRotation(90f, 2f, 0.3f); //Rotates foundation with half power
 
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED)); //Lets go of foundation
 
@@ -315,7 +291,7 @@ public class MainAuto extends AutoOpModeBase
 		POSITION_1_NO_BLOCKS(1),
 		POSITION_1_PARK(2),
 		POSITION_2_PARK(3),
-		POSITION_2_SPECIAL(4);
+		POSITION_2_FOUNDATION(4);
 
 		Mode(int value)
 		{
