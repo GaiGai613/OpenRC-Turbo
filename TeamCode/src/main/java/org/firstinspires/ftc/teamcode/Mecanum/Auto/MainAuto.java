@@ -16,6 +16,7 @@ import FTCEngine.Core.Behavior;
 import FTCEngine.Core.Input;
 import FTCEngine.Math.Mathf;
 import FTCEngine.Math.Vector2;
+import FTCEngine.VisionPipeline;
 
 @Autonomous(name = "MainAuto")
 public class MainAuto extends AutoOpModeBase
@@ -174,6 +175,7 @@ public class MainAuto extends AutoOpModeBase
 			return;
 		}
 
+		VisionPipeline.Position block = VisionPipeline.Position.UNKNOWN; //getBehavior(Camera.class).getPosition();
 		if (!getIsBlue() && mode == Mode.POSITION_1_FULL) mode = Mode.POSITION_1_NO_BLOCKS;
 
 		if (mode == Mode.POSITION_1_NO_BLOCKS)
@@ -183,6 +185,13 @@ public class MainAuto extends AutoOpModeBase
 		}
 		else
 		{
+			float yOffset = 0f;
+
+			if (block == VisionPipeline.Position.CENTER) yOffset = 16f;
+			else if (block == VisionPipeline.Position.LEFT) yOffset = 8f;
+
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, yOffset))); //Line up with skystone
+
 			buffer(grabber, new GrabberAuto.AutoJob(false, false)); //Holds grabber in correct spot
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-38f, 0f))); //Goes to blocks
 			execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED));//Puts foundation grabber to middle
@@ -191,8 +200,8 @@ public class MainAuto extends AutoOpModeBase
 			buffer(lift, new LiftAuto.AutoJob(1f)); //Lifts lift so intake works
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -5f))); //Full power back drops intake
 
-			buffer(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Drive forward to collect
 			execute(lift, new LiftAuto.AutoJob(0f)); //Stops lift
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Drive forward to collect
 
 //			for (int i = 0; i < 4; i++)
 //			{
@@ -200,8 +209,8 @@ public class MainAuto extends AutoOpModeBase
 //				wait(0.1f);
 //			}
 
-			buffer(grabber, new GrabberAuto.AutoJob(false, false));
-			buffer(lift, new LiftAuto.AutoJob(-0.1f)); //Lets lift down
+			execute(grabber, new GrabberAuto.AutoJob(false, false));
+			execute(lift, new LiftAuto.AutoJob(-0.1f)); //Lets lift down
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(17f, 0f))); //Moves back to cross under alliance bridge
 
 			resetRotation();
@@ -213,7 +222,17 @@ public class MainAuto extends AutoOpModeBase
 		buffer(lift, new LiftAuto.AutoJob(-0.3f)); //Lets lift down
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 1f)); //Goes to other side and nearly aligns to wall
 
-		wait(getIsBlue() ? 1.97f : 1.5f);
+		float time = 0f;
+
+		if (getIsBlue())
+		{
+			time = 1.97f;
+			if (block == VisionPipeline.Position.CENTER) time += 0.2f;
+			else if (block == VisionPipeline.Position.LEFT) time += 0.1f;
+		}
+		else time = 1.5f;
+
+		wait(time);
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -1f), 0.3f)); //Low power alignment
 		execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.RELEASED)); //Puts foundation grabber to middle (after b/c doesnt hit wall on red)
@@ -225,10 +244,10 @@ public class MainAuto extends AutoOpModeBase
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, getIsBlue() ? 15f : 13f))); //Goes up to foundation from wall
 
-		if (mode == Mode.POSITION_1_FULL) resetRotation(); //no time for such in full auto
+		if (mode != Mode.POSITION_1_FULL) resetRotation(); //no time for such in full auto
 
-		buffer(drivetrain, new DrivetrainAuto.AutoJob(Vector2.left, 0.5f)); //Moves...
-		buffer(touchSensor, new TouchSensorAuto.AutoJob(TouchSensorAuto.AutoJob.Mode.EXIT_WITH_ONE_TOUCHED)); //...until foundation hit
+		buffer(drivetrain, new DrivetrainAuto.AutoJob(Vector2.left, 0.7f)); //Moves...
+		buffer(touchSensor, new TouchSensorAuto.AutoJob(TouchSensorAuto.AutoJob.Mode.EXIT_WITH_BOTH_TOUCHED)); //...until foundation hit
 		execute();
 
 		execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0f)); //Stops moving
@@ -254,7 +273,7 @@ public class MainAuto extends AutoOpModeBase
 			setRotation(0f); //Rotates so lift faces foundation
 
 			execute(grabber, new GrabberAuto.AutoJob(true, true)); //Rotates arm
-			execute(lift, new LiftAuto.AutoJob(0.0f)); //Drops lift down due to gravity
+			execute(lift, new LiftAuto.AutoJob(-0.1f)); //Drops lift down
 
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -15f))); //Pushes foundation into building zone
 		}
