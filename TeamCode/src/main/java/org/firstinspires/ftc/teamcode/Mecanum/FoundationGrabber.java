@@ -34,6 +34,13 @@ public class FoundationGrabber extends TeleOpBehavior
 
 	Mode mode;
 
+	@Override
+	public void start()
+	{
+		super.start();
+		mode = Mode.GRABBED;
+	}
+
 	public void update()
 	{
 		super.update();

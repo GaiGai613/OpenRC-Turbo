@@ -151,12 +151,20 @@ public class MainAuto extends AutoOpModeBase
 
 			wait(0.35f);
 
-			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(20, 0))); //Moves foundation to building site
-			setRotation(-90f, 5f, .3f);
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(25, -15))); //Moves foundation to building site
+			setRotation(-90f, 5f, 0.3f);
 
 			execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.FOLDED)); //Releases platform
 
-			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0, -35))); //Moves to park
+			//Moves to park
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0, -10)));
+			setRotation(-180f, 5f, 0.5f);
+
+			buffer(drivetrain, new DrivetrainAuto.AutoJob(Vector2.left, 0.5f)); //Moves...
+			buffer(touchSensor, new TouchSensorAuto.AutoJob(TouchSensorAuto.AutoJob.Mode.EXIT_WITH_BOTH_TOUCHED)); //...until hit wall
+			execute();
+
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0, 25))); //Moves to park
 			return;
 		}
 

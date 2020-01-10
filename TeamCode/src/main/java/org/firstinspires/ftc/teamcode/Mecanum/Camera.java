@@ -24,7 +24,7 @@ public class Camera extends Behavior {
     public void awake(HardwareMap hardwareMap) {
         super.awake(hardwareMap);
 
-        if (getIsAuto()) vision = new Vision(hardwareMap);
+//        if (getIsAuto()) vision = new Vision(hardwareMap);
     }
 
     @Override
@@ -39,12 +39,12 @@ public class Camera extends Behavior {
 //        vision = null;
     }
 
-    public VisionPipeline.Position getPosition() {
-        return vision.getPosition();
-    }
 //    public VisionPipeline.Position getPosition() {
-//        return VisionPipeline.Position.UNKNOWN;
+//        return vision.getPosition();
 //    }
+    public VisionPipeline.Position getPosition() {
+        return VisionPipeline.Position.UNKNOWN;
+    }
 
     @Override
     public void stop() {
