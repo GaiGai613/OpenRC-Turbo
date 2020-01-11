@@ -24,7 +24,7 @@ public class Camera extends Behavior {
     public void awake(HardwareMap hardwareMap) {
         super.awake(hardwareMap);
 
-        if (getIsAuto()) vision = new Vision(hardwareMap);
+//        if (getIsAuto()) vision = new Vision(hardwareMap);
     }
 
     @Override

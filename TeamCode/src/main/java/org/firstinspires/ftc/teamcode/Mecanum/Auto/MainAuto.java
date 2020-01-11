@@ -158,14 +158,17 @@ public class MainAuto extends AutoOpModeBase
 			execute(foundationGrabber, new FoundationGrabberAuto.AutoJob(FoundationGrabber.Mode.FOLDED)); //Releases platform
 
 			//Moves to park
-			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0, -10)));
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0, -5f)));
 			setRotation(-180f, 5f, 0.5f);
 
 			buffer(drivetrain, new DrivetrainAuto.AutoJob(Vector2.left, 0.5f)); //Moves...
 			buffer(touchSensor, new TouchSensorAuto.AutoJob(TouchSensorAuto.AutoJob.Mode.EXIT_WITH_BOTH_TOUCHED)); //...until hit wall
 			execute();
 
-			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0, 25))); //Moves to park
+			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 1f), 0.8f)); //Moves to park and use power because encoders are not working
+			wait(0.92f);
+
+			execute(drivetrain, new DrivetrainAuto.AutoJob(Vector2.zero, 0f));
 			return;
 		}
 
@@ -190,7 +193,7 @@ public class MainAuto extends AutoOpModeBase
 			if (block == VisionPipeline.Position.CENTER) yOffset = 16f;
 			else if (block == VisionPipeline.Position.LEFT) yOffset = 8f;
 
-			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, yOffset))); //Line up with skystone
+//			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, yOffset))); //Line up with skystone
 
 			buffer(grabber, new GrabberAuto.AutoJob(false, false)); //Holds grabber in correct spot
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(-38f, 0f))); //Goes to blocks
@@ -269,11 +272,10 @@ public class MainAuto extends AutoOpModeBase
 		{
 			//RELEASE PLATFORM
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, 10f))); //Moves away from foundation to rotate
+			execute(grabber, new GrabberAuto.AutoJob(true, true)); //Rotates arm
 
 			setRotation(0f); //Rotates so lift faces foundation
-
-			execute(grabber, new GrabberAuto.AutoJob(true, true)); //Rotates arm
-			execute(lift, new LiftAuto.AutoJob(-0.1f)); //Drops lift down
+			execute(lift, new LiftAuto.AutoJob(-0.15f)); //Drops lift down
 
 			execute(drivetrain, new DrivetrainAuto.AutoJob(new Vector2(0f, -15f))); //Pushes foundation into building zone
 		}
