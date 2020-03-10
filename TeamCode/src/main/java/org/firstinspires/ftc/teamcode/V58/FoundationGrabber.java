@@ -27,8 +27,8 @@ public class FoundationGrabber extends TeleOpBehavior
 		updateServo();
 	}
 
-	Servo mainServo;
-	boolean grabbed;
+	private Servo mainServo;
+	private boolean grabbed;
 
 	@Override
 	public void update()
@@ -38,6 +38,11 @@ public class FoundationGrabber extends TeleOpBehavior
 		if (input.getButtonDown(Input.Source.CONTROLLER_1, Input.Button.Y)) grabbed = !grabbed;
 
 		updateServo();
+	}
+
+	public void setGrabbed(boolean grabbed)
+	{
+		this.grabbed = grabbed;
 	}
 
 	private void updateServo()

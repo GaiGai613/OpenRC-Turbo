@@ -25,8 +25,8 @@ public class SideGrabber extends TeleOpBehavior
 		updateServo();
 	}
 
-	Servo mainServo;
-	boolean grabbed;
+	private Servo mainServo;
+	private boolean grabbed;
 
 	@Override
 	public void update()
@@ -36,6 +36,11 @@ public class SideGrabber extends TeleOpBehavior
 		if (input.getButtonDown(Input.Source.CONTROLLER_2, Input.Button.Y)) grabbed = !grabbed;
 
 		updateServo();
+	}
+
+	public void setGrabbed(boolean grabbed)
+	{
+		this.grabbed = grabbed;
 	}
 
 	private void updateServo()

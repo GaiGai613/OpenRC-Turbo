@@ -67,16 +67,17 @@ public class Drivetrain extends TeleOpBehavior
 		movementInput = movementInput.mul(movementInput.getMagnitude());
 		rotationInput = rotationInput * Math.abs(rotationInput);
 
-		final float ROTATIONAL_OFFSET = 90;
+		final float ROTATIONAL_OFFSET = 90f;
 
-		setVelocity(isGlobalMode ? movementInput.rotate(ROTATIONAL_OFFSET-gyroscope.getAngles().y) : movementInput);
+		setVelocity(isGlobalMode ? movementInput.rotate(ROTATIONAL_OFFSET - gyroscope.getAngles().y) : movementInput);
 		setAngularVelocity(rotationInput);
 
 		if (velocity.equals(Vector2.zero) && Mathf.almostEquals(angularVelocity, 0f))
 		{
 			setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		}
-		else {
+		else
+		{
 			setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 		}
 
