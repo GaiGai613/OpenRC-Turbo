@@ -48,6 +48,6 @@ public class BlockGrabber extends TeleOpBehavior
 	private void updateServos()
 	{
 		mainServo.setPosition(blockGrabbed ? 1d : 0d);
-		markerServo.setPosition(markerReleased ? 0d : 1d);
+		markerServo.setPosition(markerReleased ? 1d : 0d);
 	}
 }
