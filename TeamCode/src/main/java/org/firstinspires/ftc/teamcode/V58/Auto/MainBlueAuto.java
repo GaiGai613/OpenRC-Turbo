@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.V58.Auto;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
 import FTCEngine.Math.Vector2;
 
+@Autonomous(name = "MainBlueAuto")
 public class MainBlueAuto extends MainAuto
 {
 	@Override
@@ -9,43 +12,29 @@ public class MainBlueAuto extends MainAuto
 	{
 		super.queueJobs();
 
+		float initialOffset = 7f + skystonePosition * 8f;
+
+		execute(drivetrain, new Drivetrain.Job(new Vector2(0f, 0f)));
+
 		//Get first block
-		execute(drivetrain, new Drivetrain.Job(new Vector2(-48f, 0f)));
+		execute(drivetrain, new Drivetrain.Job(new Vector2(31f, 0f)));
 		setSideGrabbed(true);
 
+		float forwardDistance = 48f + initialOffset;
+
 		//Drives and drops first block
-		execute(drivetrain, new Drivetrain.Job(new Vector2(20f, 20f)));
-		execute(drivetrain, new Drivetrain.Job(new Vector2(0f, 60f)));
+		execute(drivetrain, new Drivetrain.Job(new Vector2(-20f, 0f)));
+		execute(drivetrain, new Drivetrain.Job(new Vector2(0f, forwardDistance)));
 		setSideGrabbed(false);
 
 		//Goes and grabs second block
-		execute(drivetrain, new Drivetrain.Job(new Vector2(0f, -60f)));
-		execute(drivetrain, new Drivetrain.Job(new Vector2(-20f, -28f)));
+		execute(drivetrain, new Drivetrain.Job(new Vector2(0f, -forwardDistance - 24f)));
+		execute(drivetrain, new Drivetrain.Job(new Vector2(20f, 0f)));
 		setSideGrabbed(true);
 
 		//Drives and drops second block
-		execute(drivetrain, new Drivetrain.Job(new Vector2(20f, 28f)));
-		execute(drivetrain, new Drivetrain.Job(new Vector2(0f, 60f)));
-		setSideGrabbed(false);
-
-		//Goes and grabs third block
-		execute(drivetrain, new Drivetrain.Job(new Vector2(0f, -60f)));
-		execute(drivetrain, new Drivetrain.Job(new Vector2(-20f, -36f)));
-		setSideGrabbed(true);
-
-		//Drives and drops third block
-		execute(drivetrain, new Drivetrain.Job(new Vector2(20f, 36f)));
-		execute(drivetrain, new Drivetrain.Job(new Vector2(0f, 60f)));
-		setSideGrabbed(false);
-
-		//Goes and grabs fourth block
-		execute(drivetrain, new Drivetrain.Job(new Vector2(0f, -60f)));
-		execute(drivetrain, new Drivetrain.Job(new Vector2(-20f, -42f)));
-		setSideGrabbed(true);
-
-		//Drives and drops fourth block
-		execute(drivetrain, new Drivetrain.Job(new Vector2(20f, 42f)));
-		execute(drivetrain, new Drivetrain.Job(new Vector2(0f, 60f)));
+		execute(drivetrain, new Drivetrain.Job(new Vector2(-20f, 0f)));
+		execute(drivetrain, new Drivetrain.Job(new Vector2(0f, forwardDistance + 24f)));
 		setSideGrabbed(false);
 
 		//Moves toward the Foundation

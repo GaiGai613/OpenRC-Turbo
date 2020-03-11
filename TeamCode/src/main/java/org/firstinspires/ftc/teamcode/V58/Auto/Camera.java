@@ -15,7 +15,7 @@ public class Camera extends Behavior
 	}
 
 	Vision vision;
-	int position;
+	int position = -1000;
 
 	@Override
 	public void awake(HardwareMap hardwareMap)
@@ -24,24 +24,23 @@ public class Camera extends Behavior
 		vision = new Vision(hardwareMap);
 	}
 
-	@Override
-	public void start()
-	{
-		super.start();
-		if (vision == null) return;
-
-		switch (vision.getPosition())
-		{
-			case CENTER:
-			case UNKNOWN: position = 0; break;
-
-			case LEFT: position = -1; break;
-			case RIGHT: position = 1; break;
-		}
-	}
-
 	public int getPosition()
 	{
+		if (position < -10)
+		{
+			switch (vision.getPosition())
+			{
+				case CENTER:
+				case UNKNOWN: position = 0;
+					break;
+
+				case LEFT: position = -1;
+					break;
+				case RIGHT: position = 1;
+					break;
+			}
+		}
+
 		return position;
 	}
 }

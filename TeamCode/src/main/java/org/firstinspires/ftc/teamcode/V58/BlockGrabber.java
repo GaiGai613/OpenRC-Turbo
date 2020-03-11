@@ -20,7 +20,7 @@ public class BlockGrabber extends TeleOpBehavior
 		super.awake(hardwareMap);
 
 		input.registerButton(Input.Source.CONTROLLER_2, Input.Button.A);
-		input.registerButton(Input.Source.CONTROLLER_2, Input.Button.B);
+		input.registerButton(Input.Source.CONTROLLER_2, Input.Button.X);
 
 		mainServo = hardwareMap.servo.get("servoGrabber");
 		markerServo = hardwareMap.servo.get("servoCapstone");
@@ -40,7 +40,7 @@ public class BlockGrabber extends TeleOpBehavior
 		super.update();
 
 		if (input.getButtonDown(Input.Source.CONTROLLER_2, Input.Button.A)) blockGrabbed = !blockGrabbed;
-		if (input.getButtonDown(Input.Source.CONTROLLER_2, Input.Button.B)) markerReleased = !markerReleased;
+		if (input.getButtonDown(Input.Source.CONTROLLER_2, Input.Button.X)) markerReleased = !markerReleased;
 
 		updateServos();
 	}

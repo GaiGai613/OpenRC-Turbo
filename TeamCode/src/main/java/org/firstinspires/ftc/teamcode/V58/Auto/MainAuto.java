@@ -10,9 +10,20 @@ import FTCEngine.Core.Auto.AutoOpModeBase;
 import FTCEngine.Core.Behavior;
 import FTCEngine.Core.Input;
 import FTCEngine.Math.Mathf;
+import FTCEngine.Math.Vector2;
 
 public abstract class MainAuto extends AutoOpModeBase
 {
+	@Override
+	protected void awake()
+	{
+		super.awake();
+
+		getInput().registerButton(Input.Source.CONTROLLER_1, Input.Button.B);
+		getInput().registerButton(Input.Source.CONTROLLER_1, Input.Button.X);
+		getInput().registerButton(Input.Source.CONTROLLER_1, Input.Button.Y);
+	}
+
 	@Override
 	public void addBehaviors(List<Behavior> behaviorList)
 	{
@@ -27,10 +38,10 @@ public abstract class MainAuto extends AutoOpModeBase
 		behaviorList.add(new FoundationGrabberAuto(this));
 	}
 
-	private int waitTime;
-	private Mode mode;
+	private int waitTime = 10;
+	private Mode mode = Mode.Position1_Full;
 
-	private int skystonePosition;
+	protected int skystonePosition;
 
 	protected Drivetrain drivetrain;
 	protected SideGrabberAuto sideGrabber;
@@ -50,6 +61,8 @@ public abstract class MainAuto extends AutoOpModeBase
 
 		telemetry.addData("Mode (B)", mode);
 		telemetry.addData("Wait time (X/Y)", waitTime);
+
+		telemetry.addData("Skystone position", getBehavior(Camera.class).getPosition());
 	}
 
 	@Override
@@ -61,16 +74,25 @@ public abstract class MainAuto extends AutoOpModeBase
 	}
 
 	@Override
+	public void start()
+	{
+		skystonePosition = getBehavior(Camera.class).getPosition();
+		super.start();
+	}
+
+	@Override
 	public void loop()
 	{
-		telemetry.addData("Skystone positon", skystonePosition);
+		telemetry.addData("Skystone position", skystonePosition);
 		super.loop();
 	}
 
 	protected void setSideGrabbed(boolean grabbed)
 	{
 		execute(sideGrabber, new SideGrabberAuto.Job(grabbed));
-		wait(0.5f);
+
+		if (grabbed) execute(drivetrain, new Drivetrain.Job(new Vector2(5f, 0)));
+		else wait(0.2f);
 	}
 
 	protected void setFoundationGrabbed(boolean grabbed)
